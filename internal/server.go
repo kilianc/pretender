@@ -6,27 +6,21 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
 )
 
-func Listen(port int, responsesFileName string) error {
-	responses, err := readFileLines(responsesFileName)
-	if err != nil {
-		return fmt.Errorf("failed to read responses file [%s]: %w", responsesFileName, err)
+var responsesIndex atomic.Uint32
+
+func getNextResponse(s []string, ai *atomic.Uint32) (string, error) {
+	i := int(ai.Load())
+
+	if i >= len(s) {
+		return "", fmt.Errorf("no responses left")
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		body, err := unshift(&responses)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			slog.Error("responding", "error", err)
-			return
-		}
+	ai.Add(1)
 
-		fmt.Fprintf(w, "%s\n", body)
-		slog.Info("responding", "response", body)
-	})
-
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	return s[i], nil
 }
 
 // exported for mocking
@@ -41,13 +35,23 @@ func readFileLines(name string) ([]string, error) {
 	return strings.Split(string(content), "\n"), nil
 }
 
-func unshift(s *[]string) (string, error) {
-	if len(*s) == 0 {
-		return "", fmt.Errorf("no responses left")
+func Listen(port int, responsesFileName string) error {
+	responses, err := readFileLines(responsesFileName)
+	if err != nil {
+		return fmt.Errorf("failed to read responses file [%s]: %w", responsesFileName, err)
 	}
 
-	value := (*s)[0]
-	*s = (*s)[1:]
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		body, err := getNextResponse(responses, &responsesIndex)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			slog.Error("responding", "error", err)
+			return
+		}
 
-	return value, nil
+		fmt.Fprintf(w, "%s\n", body)
+		slog.Info("responding", "response", body)
+	})
+
+	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
