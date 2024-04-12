@@ -4,8 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
-	"pretender/internal"
+	"pretender/internal/pretender"
 	"time"
 
 	"github.com/lmittmann/tint"
@@ -31,14 +32,26 @@ func main() {
 	fmt.Printf("\033[32m•\033[0m press ctrl+c to stop\n")
 	fmt.Println("")
 
-	slog.SetDefault(slog.New(
+	logger := slog.New(
 		tint.NewHandler(os.Stderr, &tint.Options{
 			Level:      slog.LevelDebug,
 			TimeFormat: time.Kitchen,
 		}),
-	))
+	)
 
-	err := internal.Listen(*port, *responseFileName)
-	slog.Error("error starting server", "error", err)
+	hh := pretender.NewHttpHandler(logger)
+
+	err := hh.LoadResponsesFile(*responseFileName)
+	if err != nil {
+		logger.Error("error loading responses file", "error", err)
+		os.Exit(1)
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", hh.HandleFunc)
+	server := &http.Server{Addr: fmt.Sprintf(":%d", *port), Handler: mux}
+
+	err = server.ListenAndServe()
+	logger.Error("error starting server", "error", err)
 	os.Exit(1)
 }
