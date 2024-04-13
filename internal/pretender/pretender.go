@@ -9,11 +9,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync/atomic"
+	"sync"
 )
 
 type HttpHandler struct {
-	index     atomic.Uint32
+	sync.Mutex
+	index     int
 	responses []string
 	fs        fs.FS
 	logger    *slog.Logger
@@ -32,7 +33,7 @@ func (hh *HttpHandler) LoadResponsesFile(name string) error {
 		return fmt.Errorf("failed to get absolute path for responses file [%s]: %w", name, err)
 	}
 
-	// httpHandler.fs is only set in tests, we default to os filesystem
+	// HttpHandler.fs is only set in tests, we default to os filesystem
 	if hh.fs == nil {
 		hh.fs = os.DirFS(filepath.Dir(absoluteFilePath))
 	}
@@ -54,18 +55,19 @@ func (hh *HttpHandler) LoadResponsesFile(name string) error {
 }
 
 func (hh *HttpHandler) getNextResponse() (string, error) {
-	i := int(hh.index.Load())
-
-	if i >= len(hh.responses) {
+	if hh.index >= len(hh.responses) {
 		return "", fmt.Errorf("no responses left")
 	}
 
-	hh.index.Add(1)
+	response := hh.responses[hh.index]
+	hh.index++
 
-	return hh.responses[i], nil
+	return response, nil
 }
 
 func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
+	hh.Lock()
+
 	body, err := hh.getNextResponse()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -75,4 +77,6 @@ func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "%s\n", body)
 	hh.logger.Info("responding", "response", body)
+
+	hh.Unlock()
 }
