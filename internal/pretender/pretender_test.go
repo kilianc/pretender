@@ -1,6 +1,7 @@
 package pretender
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -44,22 +45,36 @@ func Test_HandleFunc(t *testing.T) {
 }
 
 func Test_loadResponsesFile(t *testing.T) {
-	expected := []string{"hello", "world", "\n"}
+	expected := []string{"hello", "world", ""}
 
 	mfs := fstest.MapFS{
 		"some/path/responses.txt": {
 			Data: []byte(strings.Join(expected, "\n")),
-			Mode: 0644,
 		},
 	}
 
-	hh := HttpHandler{fs: mfs}
-	err := hh.LoadResponsesFile("some/path/responses.txt")
-	if err != nil {
-		t.Errorf("err: %v", err)
+	tests := []struct {
+		path      string
+		errPrefix string
+	}{
+		{"some/path/responses.txt", ""},
+		{"./some/path/responses.txt", ""},
+		{"some/path/not-exists.txt", "failed to read responses file"},
 	}
 
-	if reflect.DeepEqual(hh.responses, expected) {
-		t.Errorf("got %v, expect %v", hh.responses, expected)
+	for _, tt := range tests {
+		hh := HttpHandler{
+			logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
+			fs:     mfs,
+		}
+
+		err := hh.LoadResponsesFile(tt.path)
+		if !strings.Contains(fmt.Errorf("%w", err).Error(), tt.errPrefix) {
+			t.Errorf("got \"%v\", expect \"%v*\"", err, tt.errPrefix)
+		}
+
+		if err == nil && !reflect.DeepEqual(hh.responses, expected) {
+			t.Errorf("got \"%v\", expect \"%v\"", hh.responses, expected)
+		}
 	}
 }

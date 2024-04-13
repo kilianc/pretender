@@ -5,8 +5,6 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 )
@@ -22,26 +20,12 @@ type HttpHandler struct {
 func NewHttpHandler(logger *slog.Logger) *HttpHandler {
 	return &HttpHandler{
 		logger: logger,
+		fs:     osFileReader{},
 	}
 }
 
 func (hh *HttpHandler) LoadResponsesFile(name string) error {
-	fullname, err := filepath.Abs(name)
-	if err != nil {
-		return fmt.Errorf("failed to get absolute path for responses file [%s]: %w", name, err)
-	}
-
-	dir := filepath.Dir(fullname)
-	basename := filepath.Base(fullname)
-
-	// HttpHandler.fs is only set in tests, we default to os filesystem
-	if hh.fs == nil {
-		hh.fs = os.DirFS(dir).(fs.ReadFileFS)
-	} else {
-		basename = name
-	}
-
-	content, err := hh.fs.ReadFile(basename)
+	content, err := hh.fs.ReadFile(name)
 	if err != nil {
 		return fmt.Errorf("failed to read responses file [%s]: %w", name, err)
 	}
