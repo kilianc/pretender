@@ -47,13 +47,14 @@ func Test_loadResponsesFile(t *testing.T) {
 	expected := []string{"hello", "world", "\n"}
 
 	mfs := fstest.MapFS{
-		"responses.txt": {
+		"some/path/responses.txt": {
 			Data: []byte(strings.Join(expected, "\n")),
+			Mode: 0644,
 		},
 	}
 
 	hh := HttpHandler{fs: mfs}
-	err := hh.LoadResponsesFile("responses.txt")
+	err := hh.LoadResponsesFile("some/path/responses.txt")
 	if err != nil {
 		t.Errorf("err: %v", err)
 	}

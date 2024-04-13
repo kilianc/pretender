@@ -26,19 +26,21 @@ func NewHttpHandler(logger *slog.Logger) *HttpHandler {
 }
 
 func (hh *HttpHandler) LoadResponsesFile(name string) error {
-	// this is needed to allow relative paths as input from the CLI
 	fullname, err := filepath.Abs(name)
 	if err != nil {
 		return fmt.Errorf("failed to get absolute path for responses file [%s]: %w", name, err)
 	}
 
+	dir := filepath.Dir(fullname)
+	basename := filepath.Base(fullname)
+
 	// HttpHandler.fs is only set in tests, we default to os filesystem
 	if hh.fs == nil {
-		dir := filepath.Dir(fullname)
 		hh.fs = os.DirFS(dir).(fs.ReadFileFS)
+	} else {
+		basename = name
 	}
 
-	basename := filepath.Base(fullname)
 	content, err := hh.fs.ReadFile(basename)
 	if err != nil {
 		return fmt.Errorf("failed to read responses file [%s]: %w", name, err)
