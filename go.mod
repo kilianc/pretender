@@ -1,4 +1,4 @@
-module pretender
+module github.com/kilianc/pretender
 
 go 1.22.0
 

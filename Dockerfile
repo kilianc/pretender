@@ -9,7 +9,6 @@ COPY ./ ./
 
 RUN make test
 RUN make build
-# RUN CGO_ENABLED=0 GOOS=linux go build -o /pretender
 
 FROM scratch AS release-stage
 
