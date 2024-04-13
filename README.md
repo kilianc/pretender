@@ -14,11 +14,8 @@
 
 <p align="center">
   A naive HTTP mock server that responds to requests with a sequence from a text file. Used for controlling e2e testing.
-  <br>
-  <br>
-  <br>
+  <br><br><br>
 </p>
-
 
 ```
 ❯ bin/pretender
