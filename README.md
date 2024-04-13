@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  A naive HTTP mock server that responds to requests with a sequence from a text file. Used for controlling e2e testing.
+  A naive HTTP mock server with sequential responses from a text file.
   <br><br><br>
 </p>
 
