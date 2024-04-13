@@ -2,7 +2,7 @@ test:
 	go test -v ./internal/...
 
 build:
-	CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/pretender cmd/main.go
+	CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/pretender cmd/pretender/main.go
 
 run:
 	go run cmd/main.go --responses README.md
