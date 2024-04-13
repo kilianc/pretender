@@ -69,6 +69,7 @@ func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		hh.logger.Error("responding", "error", err)
+		hh.Unlock()
 		return
 	}
 
