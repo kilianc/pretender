@@ -46,7 +46,7 @@ Every line in `responses.json` will match one consecutive http response when hit
 pretender --port 8080 --responses responses.json
 ```
 
-### Responses files
+### Responses File
 
 ```
 [
