@@ -5,7 +5,7 @@ test:
 	go test -v ./internal/...
 
 run:
-	go run cmd/main.go --responses README.md
+	go run cmd/pretender/main.go --responses README.md
 
 docker-build:
 	docker build . -t pretender:latest
