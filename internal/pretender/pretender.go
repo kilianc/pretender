@@ -1,18 +1,19 @@
 package pretender
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"log/slog"
 	"net/http"
-	"strings"
 	"sync"
+	"time"
 )
 
 type HttpHandler struct {
 	sync.Mutex
 	index     int
-	responses []string
+	responses []response
 	fs        fs.ReadFileFS
 	logger    *slog.Logger
 }
@@ -24,20 +25,24 @@ func NewHttpHandler(logger *slog.Logger) *HttpHandler {
 	}
 }
 
-func (hh *HttpHandler) LoadResponsesFile(name string) error {
+func (hh *HttpHandler) LoadResponsesFile(name string) (int, error) {
 	content, err := hh.fs.ReadFile(name)
 	if err != nil {
-		return fmt.Errorf("failed to read responses file [%s]: %w", name, err)
+		return 0, fmt.Errorf("failed to read responses file [%s]: %w", name, err)
 	}
 
-	hh.responses = strings.Split(string(content), "\n")
+	hh.responses = []response{}
+	err = json.Unmarshal(content, &hh.responses)
+	if err != nil {
+		return 0, fmt.Errorf("failed to unmarshal responses: %w", err)
+	}
 
-	return nil
+	return len(hh.responses), nil
 }
 
-func (hh *HttpHandler) getNextResponse() (string, error) {
+func (hh *HttpHandler) getNextResponse() (response, error) {
 	if hh.index >= len(hh.responses) {
-		return "", fmt.Errorf("no responses left")
+		return response{}, fmt.Errorf("no responses left")
 	}
 
 	response := hh.responses[hh.index]
@@ -49,7 +54,7 @@ func (hh *HttpHandler) getNextResponse() (string, error) {
 func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	hh.Lock()
 
-	body, err := hh.getNextResponse()
+	res, err := hh.getNextResponse()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		hh.logger.Error("responding", "error", err)
@@ -57,7 +62,24 @@ func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "%s\n", body)
-	hh.logger.Info("responding", "response", body)
+	if res.Delay > 0 {
+		time.Sleep(res.Delay)
+	}
+
+	w.WriteHeader(int(res.StatusCode))
+
+	for k, v := range res.Headers {
+		w.Header().Set(k, v)
+	}
+
+	fmt.Fprintf(w, "%s\n", res.Body)
+
+	hh.logger.Info("responding",
+		"status_code", res.StatusCode,
+		"body", res.Body,
+		"headers", res.Headers,
+		"delay", res.Delay,
+	)
+
 	hh.Unlock()
 }

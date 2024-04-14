@@ -50,11 +50,12 @@ func main() {
 
 	hh := pretender.NewHttpHandler(logger)
 
-	err := hh.LoadResponsesFile(*responseFileName)
+	rn, err := hh.LoadResponsesFile(*responseFileName)
 	if err != nil {
 		logger.Error("error loading responses file", "error", err)
 		os.Exit(1)
 	}
+	logger.Info("loaded responses from file", "file", *responseFileName, "count", rn)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", hh.HandleFunc)

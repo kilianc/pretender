@@ -1,5 +1,6 @@
 PROJECT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 GOTESTSUM_VERSION := v1.11.0
+RESPONSES ?= README.md
 
 bin/gotestsum:
 	@mkdir -p $(@D)
@@ -12,7 +13,7 @@ build:
 	CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/pretender cmd/pretender/main.go
 
 run:
-	go run cmd/pretender/main.go --responses README.md
+	go run cmd/pretender/main.go --responses $(RESPONSES)
 
 docker-build:
 	docker build $(PROJECT_DIR) -t pretender:latest

@@ -24,8 +24,11 @@ func Test_HandleFunc(t *testing.T) {
 	}
 
 	hh := HttpHandler{
-		responses: []string{"hello", "world"},
-		logger:    slog.New(slog.NewTextHandler(io.Discard, nil)),
+		responses: []response{
+			{StatusCode: http.StatusOK, Body: "hello"},
+			{StatusCode: http.StatusOK, Body: "world"},
+		},
+		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
 
 	for _, tt := range tests {
@@ -45,20 +48,29 @@ func Test_HandleFunc(t *testing.T) {
 }
 
 func Test_loadResponsesFile(t *testing.T) {
-	expected := []string{"hello", "world", ""}
-
 	mfs := fstest.MapFS{
-		"some/path/responses.txt": {
-			Data: []byte(strings.Join(expected, "\n")),
-		},
+		"some/path/valid.json": {Data: []byte(`[
+			{"status_code":200,"body":"hello"},
+			{"status_code":200,"body":"world"}
+		]`)},
+		"some/path/invalid.json": {Data: []byte("invalid json")},
 	}
 
 	tests := []struct {
 		path      string
 		errPrefix string
+		expected  []response
 	}{
-		{"some/path/responses.txt", ""},
-		{"some/path/not-exists.txt", "failed to read responses file"},
+		{
+			"some/path/valid.json",
+			"",
+			[]response{
+				{StatusCode: http.StatusOK, Body: "hello"},
+				{StatusCode: http.StatusOK, Body: "world"},
+			},
+		},
+		{"some/path/invalid.json", "failed to unmarshal responses", []response{}},
+		{"some/path/not-exists.json", "failed to read responses file", []response{}},
 	}
 
 	for _, tt := range tests {
@@ -67,7 +79,7 @@ func Test_loadResponsesFile(t *testing.T) {
 			fs:     mfs,
 		}
 
-		err := hh.LoadResponsesFile(tt.path)
+		_, err := hh.LoadResponsesFile(tt.path)
 
 		// check if error is nil when expected prefix is empty
 		if tt.errPrefix == "" && err != nil {
@@ -80,8 +92,8 @@ func Test_loadResponsesFile(t *testing.T) {
 		}
 
 		// check if responses in the file are equal to expected
-		if err == nil && !reflect.DeepEqual(hh.responses, expected) {
-			t.Errorf("got \"%v\", expect \"%v\"", hh.responses, expected)
+		if err == nil && !reflect.DeepEqual(hh.responses, tt.expected) {
+			t.Errorf("got \"%v\", expect \"%v\"", hh.responses, tt.expected)
 		}
 	}
 }
