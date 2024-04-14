@@ -18,9 +18,15 @@ import (
 const version = "v1.0.3"
 
 func main() {
+	printVersion := flag.Bool("version", false, "print version and exit")
 	responseFileName := flag.String("responses", "responses.txt", "path to the file with responses")
 	port := flag.Int("port", 8080, "port to listen")
 	flag.Parse()
+
+	if *printVersion {
+		fmt.Println(version)
+		os.Exit(0)
+	}
 
 	fmt.Println("")
 	fmt.Println("██████╗ ██████╗ ███████╗████████╗███████╗███╗   ██╗██████╗ ███████╗██████╗ ")
