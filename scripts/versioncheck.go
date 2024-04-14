@@ -10,7 +10,7 @@ import (
 
 func main() {
 	pattern := regexp.MustCompile(`v[0-9]\.[0-9]\.[0-9]`)
-	versionSet := make(map[string][]string)
+	versionSet := map[string][]string{}
 	extensions := []string{".go", ".md"}
 
 	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
@@ -40,14 +40,14 @@ func main() {
 	})
 
 	if err != nil {
-		fmt.Println("Error walking the path:", err)
+		fmt.Println("error: failed to walk dir tree:", err)
 		return
 	}
 
 	versions := keys(versionSet)
 
 	if len(versions) > 1 {
-		fmt.Println("Error: Multiple version patterns found")
+		fmt.Println("error: multiple versions found")
 		for version, path := range versionSet {
 			fmt.Printf("  %s: %s\n", version, path)
 		}
