@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/kilianc/pretender/internal/pretender"
@@ -51,7 +54,23 @@ func main() {
 	mux.HandleFunc("/", hh.HandleFunc)
 	server := &http.Server{Addr: fmt.Sprintf(":%d", *port), Handler: mux}
 
-	err = server.ListenAndServe()
-	logger.Error("error starting server", "error", err)
-	os.Exit(1)
+	go func() {
+		err = server.ListenAndServe()
+		if err != http.ErrServerClosed {
+			logger.Error("error starting server", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	signal := <-quit
+	logger.Info("shutting down server", "signal", signal.String())
+
+	err = server.Shutdown(context.Background())
+	if err != nil {
+		logger.Error("error shutting down server", "error", err)
+		os.Exit(1)
+	}
 }
