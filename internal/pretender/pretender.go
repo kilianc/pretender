@@ -59,6 +59,5 @@ func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "%s\n", body)
 	hh.logger.Info("responding", "response", body)
-
 	hh.Unlock()
 }
