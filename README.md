@@ -48,7 +48,7 @@ pretender --port 8080 --responses responses.json
 
 ### Responses File
 
-```
+```json
 [
   {
     "status_code": 200,
