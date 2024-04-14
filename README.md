@@ -57,7 +57,7 @@ pretender --port 8080 --responses responses.json
     "delay_ms": 1000
   },
   {
-    "body": "{"hello":"world"}",
+    "body": "{\"hello\":\"world\"}",
     "headers": {"Content-Type":"application/json"},
   },
   ...
