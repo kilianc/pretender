@@ -40,7 +40,7 @@ go install github.com/kilianc/pretender/cmd/pretender@v1.0.2
 
 ### Usage
 
-Every line in `responses.txt` will match one http response when hitting `http://localhost:8080`
+Every line in `responses.txt` will match one consecutive http response when hitting `http://localhost:8080`
 
 ```
 pretender --port 8080 --responses responses.txt
@@ -68,7 +68,6 @@ If you prefer to build and run `pretender` in a docker container, just on of the
 ````
 make docker-build
 make docker-run
-make docker
 ````
 
 ## License
