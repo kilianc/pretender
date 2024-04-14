@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  A naive HTTP mock server with sequential responses from a text file.
+  A naive HTTP mock server with sequential responses from a file.
   <br><br><br>
 </p>
 
@@ -28,7 +28,7 @@
 ╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.0.3
 
 • starting server on port 8080
-• using responses file: responses.txt
+• using responses file: responses.json
 • press ctrl+c to stop
 ````
 
@@ -40,11 +40,38 @@ go install github.com/kilianc/pretender/cmd/pretender@v1.0.3
 
 ### Usage
 
-Every line in `responses.txt` will match one consecutive http response when hitting `http://localhost:8080`
+Every line in `responses.json` will match one consecutive http response when hitting `http://localhost:8080`
 
 ```
-pretender --port 8080 --responses responses.txt
+pretender --port 8080 --responses responses.json
 ```
+
+### Responses files
+
+```
+[
+  {
+    "status_code": 200,
+    "body": "hello",
+    "headers": {"Content-Type":"text/plain"},
+    "delay_ms": 1000
+  },
+  {
+    "body": "{"hello":"world"}",
+    "headers": {"Content-Type":"application/json"},
+  },
+  ...
+]
+```
+
+#### A valid response definition can contain the following fields
+
+| name          | description                            | default  |
+| ------------- | -------------------------------------- | -------- |
+| `status_code` | HTTP Status code                       | `200`    |
+| `body`        | The response body                      | `""`     |
+| `headers`     | HTTP headers                           | `{}`     |
+| `delay_ms`    | Number of ms to wait before responding | `0`      |
 
 ### Local Development
 
@@ -58,7 +85,7 @@ make test
 Binary available in the `bin/` folder
 
 ```
-bin/pretender --port 8080 --responses responses.txt
+bin/pretender --port 8080 --responses responses.json
 ```
 
 ### Docker
