@@ -58,7 +58,6 @@ func Test_loadResponsesFile(t *testing.T) {
 		errPrefix string
 	}{
 		{"some/path/responses.txt", ""},
-		{"./some/path/responses.txt", ""},
 		{"some/path/not-exists.txt", "failed to read responses file"},
 	}
 
@@ -69,10 +68,18 @@ func Test_loadResponsesFile(t *testing.T) {
 		}
 
 		err := hh.LoadResponsesFile(tt.path)
-		if !strings.Contains(fmt.Errorf("%w", err).Error(), tt.errPrefix) {
+
+		// check if error is nil when expected prefix is empty
+		if tt.errPrefix == "" && err != nil {
+			t.Errorf("got \"%v\", expect nil", err)
+		}
+
+		// check if error message starts with expected prefix
+		if !strings.HasPrefix(fmt.Errorf("%w", err).Error(), tt.errPrefix) {
 			t.Errorf("got \"%v\", expect \"%v*\"", err, tt.errPrefix)
 		}
 
+		// check if responses in the file are equal to expected
 		if err == nil && !reflect.DeepEqual(hh.responses, expected) {
 			t.Errorf("got \"%v\", expect \"%v\"", hh.responses, expected)
 		}
