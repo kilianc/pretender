@@ -82,7 +82,7 @@ make build
 make test
 ```
 
-Binary available in the `bin/` folder
+After running `make build` the binary available in the `bin/` folder
 
 ```
 bin/pretender --port 8080 --responses responses.json
