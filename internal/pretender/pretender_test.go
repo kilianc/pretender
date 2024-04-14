@@ -44,7 +44,6 @@ func Test_HandleFunc(t *testing.T) {
 			t.Errorf("got %d, expect %d", w.Result().StatusCode, tt.statusCode)
 		}
 	}
-
 }
 
 func Test_loadResponsesFile(t *testing.T) {
