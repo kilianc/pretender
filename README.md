@@ -60,6 +60,17 @@ Binary available in the `bin/` folder
 ```
 bin/pretender --port 8080 --responses responses.txt
 ```
+
+### Docker
+
+If you prefer to build and run `pretender` in a docker container, just on of these commands
+
+````
+make docker-build
+make docker-run
+make docker
+````
+
 ## License
 
 MIT License, see [LICENSE](https://github.com/friendsofgo/killgrave/blob/main/LICENSE)
