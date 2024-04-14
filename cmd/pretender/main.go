@@ -15,7 +15,7 @@ import (
 	"github.com/lmittmann/tint"
 )
 
-const version = "v1.0.2"
+const version = "v1.0.3"
 
 func main() {
 	responseFileName := flag.String("responses", "responses.txt", "path to the file with responses")
