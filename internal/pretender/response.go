@@ -14,9 +14,8 @@ type response struct {
 
 func (r *response) UnmarshalJSON(data []byte) error {
 	type alias response
-	tmp := (*alias)(r)
 
-	err := json.Unmarshal(data, &tmp)
+	err := json.Unmarshal(data, (*alias)(r))
 	if err != nil {
 		return err
 	}
