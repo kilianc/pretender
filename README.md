@@ -48,7 +48,9 @@ pretender --port 8080 --responses example.json
 
 ### Responses File
 
-Both plain text and `JSON` formats are supported. Text files allow to define one response per line:
+Both plain text and `JSON` formats are supported.
+
+A `TEXT` file contains one response per line:
 
 ```txt
 This line is the first text/plain response body with 200 status code
