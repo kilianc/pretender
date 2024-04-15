@@ -64,12 +64,12 @@ func (hh *httpHandler) getNextResponse() (response, error) {
 
 func (hh *httpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	hh.Lock()
+	defer hh.Unlock()
 
 	res, err := hh.getNextResponse()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		hh.logger.Error("responding", "error", err)
-		hh.Unlock()
 		return
 	}
 
@@ -89,6 +89,4 @@ func (hh *httpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 		"headers", res.Headers,
 		"delay", res.Delay,
 	)
-
-	hh.Unlock()
 }
