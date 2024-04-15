@@ -3,7 +3,15 @@
     "status_code": 200,
     "body": "Hello World",
     "headers": {
-      "Content-Type": "text/plain"
+      "content-type": "text/plain"
+    },
+    "delay_ms": 100
+  },
+  {
+    "status_code": 200,
+    "body": "{\"message\": \"Hello World\"}",
+    "headers": {
+      "content-type": "application/json"
     },
     "delay_ms": 100
   }
