@@ -15,7 +15,7 @@ import (
 	"github.com/lmittmann/tint"
 )
 
-const version = "v1.0.3"
+const version = "v1.1.0"
 
 func main() {
 	printVersion := flag.Bool("version", false, "print version and exit")
