@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
@@ -31,10 +32,19 @@ func (hh *HttpHandler) LoadResponsesFile(name string) (int, error) {
 		return 0, fmt.Errorf("failed to read responses file [%s]: %w", name, err)
 	}
 
-	hh.responses = []response{}
-	err = json.Unmarshal(content, &hh.responses)
-	if err != nil {
-		return 0, fmt.Errorf("failed to unmarshal responses: %w", err)
+	if strings.HasSuffix(name, ".json") {
+		hh.responses = []response{}
+		err = json.Unmarshal(content, &hh.responses)
+		if err != nil {
+			return 0, fmt.Errorf("failed to unmarshal responses: %w", err)
+		}
+	} else {
+		lines := strings.Split(string(content), "\n")
+		hh.responses = make([]response, len(lines))
+
+		for i, line := range lines {
+			hh.responses[i] = response{StatusCode: 200, Body: line}
+		}
 	}
 
 	return len(hh.responses), nil

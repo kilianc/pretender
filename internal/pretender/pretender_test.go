@@ -52,6 +52,7 @@ func Test_loadResponsesFile(t *testing.T) {
 			{"status_code":200,"body":"hello"},
 			{"status_code":200,"body":"world"}
 		]`)},
+		"some/path/plain.text":   {Data: []byte("hello\nworld\n")},
 		"some/path/invalid.json": {Data: []byte("invalid json")},
 	}
 
@@ -68,8 +69,17 @@ func Test_loadResponsesFile(t *testing.T) {
 				{StatusCode: http.StatusOK, Body: "world"},
 			},
 		},
+		{
+			"some/path/plain.text",
+			"",
+			[]response{
+				{StatusCode: http.StatusOK, Body: "hello"},
+				{StatusCode: http.StatusOK, Body: "world"},
+				{StatusCode: http.StatusOK, Body: ""},
+			},
+		},
 		{"some/path/invalid.json", "failed to unmarshal responses", []response{}},
-		{"some/path/not-exists.json", "failed to read responses file", []response{}},
+		{"some/path/doesnt.exist", "failed to read responses file", []response{}},
 	}
 
 	for _, tt := range tests {
