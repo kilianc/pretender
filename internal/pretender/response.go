@@ -14,14 +14,10 @@ type response struct {
 
 func (r *response) UnmarshalJSON(data []byte) error {
 	type alias response
+	tmp := (*alias)(r)
 
-	tmp := struct {
-		*alias
-	}{
-		alias: (*alias)(r),
-	}
-
-	if err := json.Unmarshal(data, &tmp); err != nil {
+	err := json.Unmarshal(data, &tmp)
+	if err != nil {
 		return err
 	}
 

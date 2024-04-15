@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 	"testing/fstest"
+	"time"
 )
 
 func Test_HandleFunc(t *testing.T) {
@@ -73,8 +74,8 @@ func Test_HandleFunc(t *testing.T) {
 func Test_loadResponsesFile(t *testing.T) {
 	mfs := fstest.MapFS{
 		"some/path/valid.json": {Data: []byte(`[
-			{"status_code":200,"body":"hello","headers":{"content-type": "application/json"}},
-			{"status_code":404,"body":"world","headers":{"content-type": "application/json"}}
+			{"body":"hello","headers":{"content-type":"application/json"},"delay_ms":1000},
+			{"status_code":404,"body":"world","headers":{"content-type":"application/json"}}
 		]`)},
 		"some/path/plain.text":   {Data: []byte("hello\nworld\n")},
 		"some/path/invalid.json": {Data: []byte("invalid json")},
@@ -93,11 +94,13 @@ func Test_loadResponsesFile(t *testing.T) {
 					StatusCode: http.StatusOK,
 					Body:       "hello",
 					Headers:    map[string]string{"content-type": "application/json"},
+					Delay:      time.Duration(1) * time.Second,
 				},
 				{
 					StatusCode: http.StatusNotFound,
 					Body:       "world",
 					Headers:    map[string]string{"content-type": "application/json"},
+					Delay:      0,
 				},
 			},
 		},
