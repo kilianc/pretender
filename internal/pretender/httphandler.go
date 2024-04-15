@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type HttpHandler struct {
+type httpHandler struct {
 	sync.Mutex
 	index     int
 	responses []response
@@ -19,14 +19,14 @@ type HttpHandler struct {
 	logger    *slog.Logger
 }
 
-func NewHttpHandler(logger *slog.Logger) *HttpHandler {
-	return &HttpHandler{
+func NewHttpHandler(logger *slog.Logger) *httpHandler {
+	return &httpHandler{
 		logger: logger,
 		fs:     osFileReader{},
 	}
 }
 
-func (hh *HttpHandler) LoadResponsesFile(name string) (int, error) {
+func (hh *httpHandler) LoadResponsesFile(name string) (int, error) {
 	content, err := hh.fs.ReadFile(name)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read responses file [%s]: %w", name, err)
@@ -51,7 +51,7 @@ func (hh *HttpHandler) LoadResponsesFile(name string) (int, error) {
 	return len(hh.responses), nil
 }
 
-func (hh *HttpHandler) getNextResponse() (response, error) {
+func (hh *httpHandler) getNextResponse() (response, error) {
 	if hh.index >= len(hh.responses) {
 		return response{}, fmt.Errorf("no responses left")
 	}
@@ -62,7 +62,7 @@ func (hh *HttpHandler) getNextResponse() (response, error) {
 	return response, nil
 }
 
-func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
+func (hh *httpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	hh.Lock()
 	defer hh.Unlock()
 
