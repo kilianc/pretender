@@ -79,8 +79,8 @@ A `JSON` file allows more flexibility and controls:
 
 | name          | description                            | default                         |
 | ------------- | -------------------------------------- | ------------------------------- |
-| `status_code` | HTTP Status code                       | `200`                           |
-| `body`        | The response body                      | `""`                            |
+| `status_code` | HTTP status code                       | `200`                           |
+| `body`        | HTTP response body                     | `""`                            |
 | `headers`     | HTTP headers                           | `{"content-type":"text/plain"}` |
 | `delay_ms`    | Number of ms to wait before responding | `0`                             |
 
