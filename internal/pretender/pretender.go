@@ -34,6 +34,7 @@ func (hh *HttpHandler) LoadResponsesFile(name string) (int, error) {
 
 	if strings.HasSuffix(name, ".json") {
 		hh.responses = []response{}
+
 		err = json.Unmarshal(content, &hh.responses)
 		if err != nil {
 			return 0, fmt.Errorf("failed to unmarshal responses: %w", err)
