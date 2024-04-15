@@ -11,6 +11,13 @@ import (
 	"time"
 )
 
+type response struct {
+	StatusCode uint              `json:"status_code"`
+	Body       string            `json:"body"`
+	Headers    map[string]string `json:"headers"`
+	DelayMs    uint              `json:"delay_ms"`
+}
+
 type httpHandler struct {
 	sync.Mutex
 	index     int
@@ -38,6 +45,12 @@ func (hh *httpHandler) LoadResponsesFile(name string) (int, error) {
 		err = json.Unmarshal(content, &hh.responses)
 		if err != nil {
 			return 0, fmt.Errorf("failed to unmarshal responses: %w", err)
+		}
+
+		for i := range hh.responses {
+			if hh.responses[i].StatusCode == 0 {
+				hh.responses[i].StatusCode = 200
+			}
 		}
 	} else {
 		lines := strings.Split(string(content), "\n")
@@ -73,20 +86,27 @@ func (hh *httpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if res.Delay > 0 {
-		time.Sleep(res.Delay)
+	delay := time.Duration(res.DelayMs) * time.Millisecond
+	if res.DelayMs > 0 {
+		time.Sleep(delay)
 	}
 
 	for k, v := range res.Headers {
 		w.Header().Set(k, v)
 	}
 	w.WriteHeader(int(res.StatusCode))
-	fmt.Fprintf(w, "%s\n", res.Body)
+
+	_, err = fmt.Fprintf(w, "%s\n", res.Body)
+	if err != nil {
+		hh.logger.Error("responding", "error", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	hh.logger.Info("responding",
 		"status_code", res.StatusCode,
 		"body", res.Body,
 		"headers", res.Headers,
-		"delay", res.Delay,
+		"delay", delay,
 	)
 }
