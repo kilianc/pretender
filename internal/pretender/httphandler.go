@@ -15,7 +15,7 @@ type HttpHandler struct {
 	sync.Mutex
 	index     int
 	responses []response
-	fs        fs.ReadFileFS
+	fs        fs.FS
 	logger    *slog.Logger
 }
 
@@ -64,12 +64,12 @@ func (hh *HttpHandler) getNextResponse() (response, error) {
 
 func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	hh.Lock()
+	defer hh.Unlock()
 
 	res, err := hh.getNextResponse()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		hh.logger.Error("responding", "error", err)
-		hh.Unlock()
 		return
 	}
 
@@ -89,6 +89,4 @@ func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 		"headers", res.Headers,
 		"delay", res.Delay,
 	)
-
-	hh.Unlock()
 }
