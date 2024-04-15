@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  A naive HTTP mock server with sequential responses from a text file.
+  A naive HTTP mock server with sequential responses from a file.
   <br><br><br>
 </p>
 
@@ -25,26 +25,64 @@
 ██████╔╝██████╔╝█████╗     ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
 ██╔═══╝ ██╔══██╗██╔══╝     ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗
 ██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║
-╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.0.3
+╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.1.0
 
 • starting server on port 8080
-• using responses file: responses.txt
+• using responses file: example.json
 • press ctrl+c to stop
 ````
 
 ### Install
 
 ```
-go install github.com/kilianc/pretender/cmd/pretender@v1.0.3
+go install github.com/kilianc/pretender/cmd/pretender@v1.1.0
 ```
 
 ### Usage
 
-Every line in `responses.txt` will match one consecutive http response when hitting `http://localhost:8080`
+Every line in `example.json` will match one consecutive http response when hitting `http://localhost:8080`
 
 ```
-pretender --port 8080 --responses responses.txt
+pretender --port 8080 --responses example.json
 ```
+
+### Responses File
+
+Both plain text and `JSON` formats are supported.
+
+A `TEXT` file contains one response per line:
+
+```txt
+This line is the first text/plain response body with 200 status code
+This line is the second text/plain response body with 200 status code
+```
+
+A `JSON` file allows more flexibility and controls:
+
+```jsonc
+[
+  {
+    "status_code": 200,
+    "body": "hello",
+    "headers": {"content-type":"text/plain"},
+    "delay_ms": 1000
+  },
+  {
+    "body": "{\"hello\":\"world\"}",
+    "headers": {"Content-Type":"application/json"},
+  },
+  // ...
+]
+```
+
+#### A valid response definition can contain the following fields
+
+| name          | description                            | default                         |
+| ------------- | -------------------------------------- | ------------------------------- |
+| `status_code` | HTTP status code                       | `200`                           |
+| `body`        | HTTP response body                     | `""`                            |
+| `headers`     | HTTP headers                           | `{"content-type":"text/plain"}` |
+| `delay_ms`    | Number of ms to wait before responding | `0`                             |
 
 ### Local Development
 
@@ -55,10 +93,10 @@ make build
 make test
 ```
 
-Binary available in the `bin/` folder
+After running `make build` the binary available in the `bin/` folder
 
 ```
-bin/pretender --port 8080 --responses responses.txt
+bin/pretender --port 8080 --responses example.json
 ```
 
 ### Docker

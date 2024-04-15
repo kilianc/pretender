@@ -15,11 +15,11 @@ import (
 	"github.com/lmittmann/tint"
 )
 
-const version = "v1.0.3"
+const version = "v1.1.0"
 
 func main() {
 	printVersion := flag.Bool("version", false, "print version and exit")
-	responseFileName := flag.String("responses", "responses.txt", "path to the file with responses")
+	responseFileName := flag.String("responses", "responses.json", "path to the file with responses")
 	port := flag.Int("port", 8080, "port to listen")
 	flag.Parse()
 
@@ -50,11 +50,12 @@ func main() {
 
 	hh := pretender.NewHttpHandler(logger)
 
-	err := hh.LoadResponsesFile(*responseFileName)
+	rn, err := hh.LoadResponsesFile(*responseFileName)
 	if err != nil {
 		logger.Error("error loading responses file", "error", err)
 		os.Exit(1)
 	}
+	logger.Info("loaded responses from file", "file", *responseFileName, "count", rn)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", hh.HandleFunc)
