@@ -15,7 +15,7 @@ type httpHandler struct {
 	sync.Mutex
 	index     int
 	responses []response
-	fs        fs.ReadFileFS
+	fs        fs.FS
 	logger    *slog.Logger
 }
 
@@ -27,7 +27,7 @@ func NewHttpHandler(logger *slog.Logger) *httpHandler {
 }
 
 func (hh *httpHandler) LoadResponsesFile(name string) (int, error) {
-	content, err := hh.fs.ReadFile(name)
+	content, err := fs.ReadFile(hh.fs, name)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read responses file [%s]: %w", name, err)
 	}
