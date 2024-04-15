@@ -48,30 +48,39 @@ pretender --port 8080 --responses example.json
 
 ### Responses File
 
-```json
+Both plain text and `JSON` formats are supported. Text files allow to define one response per line:
+
+```txt
+This line is the first text/plain response body with 200 status code
+This line is the second text/plain response body with 200 status code
+```
+
+A `JSON` file allows more flexibility and controls:
+
+```jsonc
 [
   {
     "status_code": 200,
     "body": "hello",
-    "headers": {"Content-Type":"text/plain"},
+    "headers": {"content-type":"text/plain"},
     "delay_ms": 1000
   },
   {
     "body": "{\"hello\":\"world\"}",
     "headers": {"Content-Type":"application/json"},
   },
-  ...
+  // ...
 ]
 ```
 
 #### A valid response definition can contain the following fields
 
-| name          | description                            | default  |
-| ------------- | -------------------------------------- | -------- |
-| `status_code` | HTTP Status code                       | `200`    |
-| `body`        | The response body                      | `""`     |
-| `headers`     | HTTP headers                           | `{}`     |
-| `delay_ms`    | Number of ms to wait before responding | `0`      |
+| name          | description                            | default                         |
+| ------------- | -------------------------------------- | ------------------------------- |
+| `status_code` | HTTP Status code                       | `200`                           |
+| `body`        | The response body                      | `""`                            |
+| `headers`     | HTTP headers                           | `{"content-type":"text/plain"}` |
+| `delay_ms`    | Number of ms to wait before responding | `0`                             |
 
 ### Local Development
 
