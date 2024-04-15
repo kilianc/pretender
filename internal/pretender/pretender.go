@@ -77,12 +77,10 @@ func (hh *HttpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(res.Delay)
 	}
 
-	w.WriteHeader(int(res.StatusCode))
-
 	for k, v := range res.Headers {
 		w.Header().Set(k, v)
 	}
-
+	w.WriteHeader(int(res.StatusCode))
 	fmt.Fprintf(w, "%s\n", res.Body)
 
 	hh.logger.Info("responding",

@@ -14,19 +14,39 @@ import (
 
 func Test_HandleFunc(t *testing.T) {
 	tests := []struct {
-		expect     string
-		statusCode int
-		err        error
+		statusCode  int
+		body        string
+		contentType string
 	}{
-		{"hello\n", http.StatusOK, nil},
-		{"world\n", http.StatusOK, nil},
-		{"no responses left\n", http.StatusInternalServerError, nil},
+		{
+			statusCode:  http.StatusOK,
+			body:        "hello\n",
+			contentType: "my/type1",
+		},
+		{
+			statusCode:  http.StatusOK,
+			body:        "world\n",
+			contentType: "my/type2",
+		},
+		{
+			statusCode:  http.StatusInternalServerError,
+			body:        "no responses left\n",
+			contentType: "text/plain; charset=utf-8",
+		},
 	}
 
 	hh := HttpHandler{
 		responses: []response{
-			{StatusCode: http.StatusOK, Body: "hello"},
-			{StatusCode: http.StatusOK, Body: "world"},
+			{
+				StatusCode: http.StatusOK,
+				Body:       "hello",
+				Headers:    map[string]string{"content-type": "my/type1"},
+			},
+			{
+				StatusCode: http.StatusOK,
+				Body:       "world",
+				Headers:    map[string]string{"content-type": "my/type2"},
+			},
 		},
 		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
@@ -36,12 +56,16 @@ func Test_HandleFunc(t *testing.T) {
 		r := httptest.NewRequest(http.MethodGet, "/", nil)
 		hh.HandleFunc(w, r)
 
-		if w.Body.String() != tt.expect {
-			t.Errorf("got %q, expect %q", w.Body, tt.expect)
+		if w.Body.String() != tt.body {
+			t.Errorf("got %q, expect %q", w.Body, tt.body)
 		}
 
 		if w.Result().StatusCode != tt.statusCode {
 			t.Errorf("got %d, expect %d", w.Result().StatusCode, tt.statusCode)
+		}
+
+		if w.Result().Header.Get("content-type") != tt.contentType {
+			t.Errorf("got %q, expect %q", w.Result().Header.Get("content-type"), tt.contentType)
 		}
 	}
 }
@@ -49,8 +73,8 @@ func Test_HandleFunc(t *testing.T) {
 func Test_loadResponsesFile(t *testing.T) {
 	mfs := fstest.MapFS{
 		"some/path/valid.json": {Data: []byte(`[
-			{"status_code":200,"body":"hello"},
-			{"status_code":200,"body":"world"}
+			{"status_code":200,"body":"hello","headers":{"content-type": "application/json"}},
+			{"status_code":404,"body":"world","headers":{"content-type": "application/json"}}
 		]`)},
 		"some/path/plain.text":   {Data: []byte("hello\nworld\n")},
 		"some/path/invalid.json": {Data: []byte("invalid json")},
@@ -65,8 +89,16 @@ func Test_loadResponsesFile(t *testing.T) {
 			"some/path/valid.json",
 			"",
 			[]response{
-				{StatusCode: http.StatusOK, Body: "hello"},
-				{StatusCode: http.StatusOK, Body: "world"},
+				{
+					StatusCode: http.StatusOK,
+					Body:       "hello",
+					Headers:    map[string]string{"content-type": "application/json"},
+				},
+				{
+					StatusCode: http.StatusNotFound,
+					Body:       "world",
+					Headers:    map[string]string{"content-type": "application/json"},
+				},
 			},
 		},
 		{

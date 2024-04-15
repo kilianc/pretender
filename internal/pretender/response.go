@@ -17,7 +17,6 @@ func (r *response) UnmarshalJSON(data []byte) error {
 
 	tmp := struct {
 		*alias
-		Headers map[string]string `json:"headers"`
 	}{
 		alias: (*alias)(r),
 	}
