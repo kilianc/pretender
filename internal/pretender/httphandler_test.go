@@ -10,7 +10,6 @@ import (
 	"strings"
 	"testing"
 	"testing/fstest"
-	"time"
 )
 
 func Test_HandleFunc(t *testing.T) {
@@ -94,13 +93,13 @@ func Test_loadResponsesFile(t *testing.T) {
 					StatusCode: http.StatusOK,
 					Body:       "hello",
 					Headers:    map[string]string{"content-type": "application/json"},
-					Delay:      time.Duration(1) * time.Second,
+					DelayMs:    1000,
 				},
 				{
 					StatusCode: http.StatusNotFound,
 					Body:       "world",
 					Headers:    map[string]string{"content-type": "application/json"},
-					Delay:      0,
+					DelayMs:    0,
 				},
 			},
 		},
