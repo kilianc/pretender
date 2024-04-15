@@ -15,7 +15,7 @@ type httpHandler struct {
 	sync.Mutex
 	index     int
 	responses []response
-	fs        fs.FS
+	fs        fs.ReadFileFS
 	logger    *slog.Logger
 }
 
