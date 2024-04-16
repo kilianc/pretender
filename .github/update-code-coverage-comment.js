@@ -12,8 +12,8 @@ const updateCodeCoverageComment = module.exports = async ({ context, github }) =
     return comment.body.startsWith('<!-- coverage -->')
   }) || {}
 
-  const coverageText = fs.readFileSync('coverage-text.txt', 'utf8').split('\n')
-  const coverageTextSummary = coverageText.slice(-2, -1)[0].split('\t').pop()
+  const coverageText = fs.readFileSync('coverage-text.txt', 'utf8').split('\n').slice(0, -1)
+  const coverageTextSummary = coverageText[coverageText.length-1].split('\t').pop()
 
   const commentBody = [
     '<!-- coverage -->',
