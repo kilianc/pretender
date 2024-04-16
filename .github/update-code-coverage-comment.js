@@ -12,7 +12,10 @@ const updateCodeCoverageComment = module.exports = async ({ context, github }) =
     return comment.body.startsWith('<!-- coverage -->')
   }) || {}
 
-  const coverageText = fs.readFileSync('coverage-text.txt', 'utf8').split('\n')
+  const coverageText = fs.readFileSync('coverage-text.txt', 'utf8')
+    .replaceAll(`github.com/${context.repo.owner}/${context.repo.repo}/`, '')
+    .split('\n')
+
   const coverageTextSummary = coverageText.pop().split('\t').pop()
 
   const commentBody = [
