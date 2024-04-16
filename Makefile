@@ -1,6 +1,6 @@
 PROJECT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 GOTESTSUM_VERSION := v1.11.0
-RESPONSES_FILE ?= example.json
+RESPONSES_FILE ?= examples/example.json
 
 bin/gotestsum:
 	@mkdir -p $(@D)
