@@ -52,25 +52,27 @@ func Test_HandleFunc(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		w := httptest.NewRecorder()
-		r := httptest.NewRequest(http.MethodGet, "/", nil)
-		hh.HandleFunc(w, r)
+		t.Run(fmt.Sprintf("%v %q", tt.statusCode, tt.body), func(t *testing.T) {
+			w := httptest.NewRecorder()
+			r := httptest.NewRequest(http.MethodGet, "/", nil)
+			hh.HandleFunc(w, r)
 
-		if w.Body.String() != tt.body {
-			t.Errorf("got %q, expect %q", w.Body, tt.body)
-		}
+			if w.Body.String() != tt.body {
+				t.Errorf("got %q, expect %q", w.Body, tt.body)
+			}
 
-		if w.Result().StatusCode != tt.statusCode {
-			t.Errorf("got %d, expect %d", w.Result().StatusCode, tt.statusCode)
-		}
+			if w.Result().StatusCode != tt.statusCode {
+				t.Errorf("got %d, expect %d", w.Result().StatusCode, tt.statusCode)
+			}
 
-		if w.Result().Header.Get("content-type") != tt.contentType {
-			t.Errorf("got %q, expect %q", w.Result().Header.Get("content-type"), tt.contentType)
-		}
+			if w.Result().Header.Get("content-type") != tt.contentType {
+				t.Errorf("got %q, expect %q", w.Result().Header.Get("content-type"), tt.contentType)
+			}
+		})
 	}
 }
 
-func Test_loadResponsesFile(t *testing.T) {
+func Test_LoadResponsesFile(t *testing.T) {
 	mfs := fstest.MapFS{
 		"some/path/valid.json": {Data: []byte(`[
 			{"body":"hello","headers":{"content-type":"application/json"},"delay_ms":1000},
@@ -117,26 +119,28 @@ func Test_loadResponsesFile(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		hh := httpHandler{
-			logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
-			fs:     mfs,
-		}
+		t.Run(fmt.Sprintf("%q", tt.path), func(t *testing.T) {
+			hh := httpHandler{
+				logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
+				fs:     mfs,
+			}
 
-		_, err := hh.LoadResponsesFile(tt.path)
+			_, err := hh.LoadResponsesFile(tt.path)
 
-		// check if error is nil when expected prefix is empty
-		if tt.errPrefix == "" && err != nil {
-			t.Errorf("got \"%v\", expect nil", err)
-		}
+			// check if error is nil when expected prefix is empty
+			if tt.errPrefix == "" && err != nil {
+				t.Errorf("got \"%v\", expect nil", err)
+			}
 
-		// check if error message starts with expected prefix
-		if !strings.HasPrefix(fmt.Errorf("%w", err).Error(), tt.errPrefix) {
-			t.Errorf("got \"%v\", expect \"%v*\"", err, tt.errPrefix)
-		}
+			// check if error message starts with expected prefix
+			if !strings.HasPrefix(fmt.Errorf("%w", err).Error(), tt.errPrefix) {
+				t.Errorf("got \"%v\", expect \"%v*\"", err, tt.errPrefix)
+			}
 
-		// check if responses in the file are equal to expected
-		if err == nil && !reflect.DeepEqual(hh.responses, tt.expected) {
-			t.Errorf("got \"%v\", expect \"%v\"", hh.responses, tt.expected)
-		}
+			// check if responses in the file are equal to expected
+			if err == nil && !reflect.DeepEqual(hh.responses, tt.expected) {
+				t.Errorf("got \"%v\", expect \"%v\"", hh.responses, tt.expected)
+			}
+		})
 	}
 }
