@@ -9,9 +9,15 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
 
   build:
+    permissions:
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -26,6 +32,13 @@ jobs:
 
     - name: Test
       run: make test
+
+    - name: Post Code Coverage Comment
+      uses: actions/github-script@v6
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: await require('${{ github.workspace }}/.github/update-code-coverage-comment.js')({ context, github })
 
     - name: Version Check
       run: make version-check
