@@ -17,7 +17,7 @@
   <br><br><br>
 </p>
 
-```
+```sh
 ❯ bin/pretender
 
 ██████╗ ██████╗ ███████╗████████╗███████╗███╗   ██╗██████╗ ███████╗██████╗
@@ -34,7 +34,7 @@
 
 ### Install
 
-```
+```sh
 go install github.com/kilianc/pretender/cmd/pretender@v1.1.0
 ```
 
@@ -42,7 +42,7 @@ go install github.com/kilianc/pretender/cmd/pretender@v1.1.0
 
 Every line in `examples/example.json` will match one consecutive http response when hitting `http://localhost:8080`
 
-```
+```sh
 pretender --port 8080 --responses examples/example.json
 ```
 
@@ -87,7 +87,8 @@ A `JSON` file allows more flexibility and controls:
 ### Local Development
 
 These are the usual suspects
-```
+
+```sh
 make run
 make build
 make test
@@ -95,7 +96,7 @@ make test
 
 After running `make build` the binary available in the `bin/` folder
 
-```
+```sh
 bin/pretender --port 8080 --responses examples/example.json
 ```
 
@@ -103,7 +104,7 @@ bin/pretender --port 8080 --responses examples/example.json
 
 If you prefer to build and run `pretender` in a docker container, just on of these commands
 
-````
+````sh
 make docker-build
 make docker-run
 ````
