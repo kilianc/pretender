@@ -27,5 +27,12 @@ jobs:
     - name: Test
       run: make test
 
+    - name: update code coverage comment
+      uses: actions/github-script@v6
+      if: ${{ github.event_name == 'pull_request' }}
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: await require('${{ github.workspace }}/.github/update-code-coverage-comment.js')({ context, github })
+
     - name: Version Check
       run: make version-check

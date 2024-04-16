@@ -7,7 +7,8 @@ bin/gotestsum:
 	GOBIN=$(PROJECT_DIR)/$(@D) go install gotest.tools/gotestsum@$(GOTESTSUM_VERSION)
 
 test: bin/gotestsum
-	cd $(PROJECT_DIR) && $(PROJECT_DIR)/bin/gotestsum --format testdox ./internal/...
+	cd $(PROJECT_DIR) && $(PROJECT_DIR)/bin/gotestsum --format testdox -- -coverprofile=cover.out ./internal/...
+	cd $(PROJECT_DIR) && go tool cover -func=cover.out > coverage-text.txt
 
 build:
 	CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/pretender cmd/pretender/main.go
