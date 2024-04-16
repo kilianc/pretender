@@ -28,7 +28,7 @@
 ╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.1.0
 
 • starting server on port 8080
-• using responses file: example.json
+• using responses file: examples/example.json
 • press ctrl+c to stop
 ````
 
@@ -40,10 +40,10 @@ go install github.com/kilianc/pretender/cmd/pretender@v1.1.0
 
 ### Usage
 
-Every line in `example.json` will match one consecutive http response when hitting `http://localhost:8080`
+Every line in `examples/example.json` will match one consecutive http response when hitting `http://localhost:8080`
 
 ```
-pretender --port 8080 --responses example.json
+pretender --port 8080 --responses examples/example.json
 ```
 
 ### Responses File
@@ -96,7 +96,7 @@ make test
 After running `make build` the binary available in the `bin/` folder
 
 ```
-bin/pretender --port 8080 --responses example.json
+bin/pretender --port 8080 --responses examples/example.json
 ```
 
 ### Docker
