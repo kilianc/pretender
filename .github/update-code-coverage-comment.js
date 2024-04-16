@@ -13,8 +13,8 @@ const updateCodeCoverageComment = module.exports = async ({ context, github }) =
   }) || {}
 
   const coverageText = fs.readFileSync('coverage-text.txt', 'utf8')
-    .replaceAll(`github.com/${context.repo.owner}/${context.repo.repo}/`, '')
     .split('\n')
+    .map((line) => line.slice(`github.com/${context.repo.owner}/${context.repo.repo}/`.length, -1))
 
   const coverageTextSummary = coverageText.slice(-2, -1)[0].split('\t').pop()
 
