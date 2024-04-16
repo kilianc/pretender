@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
-	"strings"
 )
 
 func main() {
@@ -22,10 +21,6 @@ func main() {
 		}
 
 		if info.IsDir() {
-			return nil
-		}
-
-		if strings.HasPrefix(path, ".git") {
 			return nil
 		}
 
