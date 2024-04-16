@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strings"
 )
 
 func main() {
@@ -13,12 +14,18 @@ func main() {
 	versionSet := map[string][]string{}
 	extensions := []string{".go", ".md"}
 
+	fmt.Println("")
+
 	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
 		if info.IsDir() {
+			return nil
+		}
+
+		if strings.HasPrefix(path, ".git") {
 			return nil
 		}
 
@@ -32,6 +39,13 @@ func main() {
 		}
 
 		versions := pattern.FindAllString(string(content), -1)
+
+		if len(versions) == 0 {
+			fmt.Printf(" \033[38;5;245m• checking %s\033[0m\n", path)
+		} else {
+			fmt.Printf(" \033[1;93m•\033[0m checking %q %q\033[0m\n", path, versions)
+		}
+
 		for _, version := range versions {
 			versionSet[version] = append(versionSet[version], path)
 		}
@@ -44,17 +58,20 @@ func main() {
 		return
 	}
 
+	fmt.Println("")
+
 	versions := keys(versionSet)
 
 	if len(versions) > 1 {
-		fmt.Println("error: multiple versions found")
+		fmt.Println("\033[91m✘ error: multiple versions found:\033[0m")
 		for version, path := range versionSet {
-			fmt.Printf("  %s: %s\n", version, path)
+			fmt.Printf("\033[38;5;210m  %q: %q\033[0m\n", version, path)
 		}
+		fmt.Println("")
 		os.Exit(1)
 	}
 
-	fmt.Println("All files have the same version:", versions[0])
+	fmt.Printf("\033[92m✔ All files have the same version: %q\033[0m\n", versions[0])
 }
 
 func keys(m map[string][]string) []string {
