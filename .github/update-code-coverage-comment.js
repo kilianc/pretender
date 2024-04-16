@@ -16,7 +16,7 @@ const updateCodeCoverageComment = module.exports = async ({ context, github }) =
     .replaceAll(`github.com/${context.repo.owner}/${context.repo.repo}/`, '')
     .split('\n')
 
-  const coverageTextSummary = coverageText.pop().split('\t').pop()
+  const coverageTextSummary = coverageText.slice(-2, -1)[0].split('\t').pop()
 
   const commentBody = [
     '<!-- coverage -->',
