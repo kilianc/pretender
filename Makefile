@@ -22,6 +22,6 @@ docker-run: docker-build
 	docker run --rm -v $(PROJECT_DIR)/$(RESPONSES_FILE):/$(RESPONSES_FILE) -p 8080:8080 pretender:latest --responses /$(RESPONSES_FILE)
 
 version-check:
-	go run scripts/versioncheck.go
+	@go run tools/versioncheck/main.go
 
 .PHONY: test build run docker-build docker-run version-check
