@@ -1,0 +1,12 @@
+{
+  "cSpell.words": [
+    "doesnt",
+    "kilianc",
+    "lmittmann"
+  ],
+  "markdownlint.config": {
+    "MD033": false,
+    "MD041": false,
+    "MD045": false
+  }
+}
