@@ -17,7 +17,6 @@ const updateCodeCoverageComment = module.exports = async ({ context, github }) =
 
   const commentBody = [
     '<!-- coverage -->',
-    '## Good Bot Monitor',
     `### Code Coverage Report ${process.env.REVISION}`,
     '```',
     `Total: ${coverageTextSummary}`,
