@@ -38,6 +38,15 @@
 go install github.com/kilianc/pretender/cmd/pretender@v1.1.0
 ```
 
+Or using Docker
+
+```sh
+docker run --rm -it \
+  -p 8080:8080 \
+  -v $(pwd)/examples:/examples \
+  kilianciuffolo/pretender:v1.1.0 --responses /examples/example.json
+```
+
 ### Usage
 
 Every line in `examples/example.json` will match one consecutive http response when hitting `http://localhost:8080`

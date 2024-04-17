@@ -27,9 +27,9 @@ jobs:
             kilianciuffolo/pretender
           tags: |
             type=ref,event=tag
-            type=semver,pattern={{version}},value=${{ github.event.inputs.tag || github.ref }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ github.event.inputs.tag || github.ref }}
-            type=semver,pattern={{major}},value=${{ github.event.inputs.tag || github.ref }}
+            type=semver,pattern=v{{version}},value=${{ github.event.inputs.tag || github.ref }}
+            type=semver,pattern=v{{major}}.{{minor}},value=${{ github.event.inputs.tag || github.ref }}
+            type=semver,pattern=v{{major}},value=${{ github.event.inputs.tag || github.ref }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
