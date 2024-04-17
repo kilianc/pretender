@@ -1,4 +1,4 @@
-name: docker-push
+name: docker
 
 on:
   push:
@@ -11,26 +11,25 @@ on:
         required: true
 
 jobs:
-  docker:
+  push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag }}
+          ref: ${{ github.event.inputs.tag || github.ref }}
 
-      - name: Docker meta
+      - name: Docker Meta
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
             kilianciuffolo/pretender
           tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
+            type=ref,event=tag
+            type=semver,pattern={{version}},value=${{ github.event.inputs.tag || github.ref }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ github.event.inputs.tag || github.ref }}
+            type=semver,pattern={{major}},value=${{ github.event.inputs.tag || github.ref }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -44,7 +43,7 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and Push
         uses: docker/build-push-action@v5
         with:
           context: .
