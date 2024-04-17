@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/kilianc/pretender/actions/workflows/go.yml/badge.svg?branch=main">
+  <img src="https://github.com/kilianc/pretender/actions/workflows/go.yaml/badge.svg?branch=main">
   <img src="https://img.shields.io/github/release/kilianc/pretender.svg">
   <img src="https://goreportcard.com/badge/github.com/kilianc/pretender">
 </p>
