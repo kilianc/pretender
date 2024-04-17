@@ -44,7 +44,7 @@ Or using Docker
 docker run --rm -it \
   -p 8080:8080 \
   -v $(pwd)/examples:/examples \
-  kilianciuffolo/pretender:latest --responses /examples/example.json
+  kilianciuffolo/pretender:v1.1.0 --responses /examples/example.json
 ```
 
 ### Usage
