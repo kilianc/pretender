@@ -8,5 +8,12 @@
     "MD033": false,
     "MD041": false,
     "MD045": false
+  },
+  "go.lintTool": "golangci-lint",
+  "gopls": {
+    "formatting.gofumpt": true,
+    "ui.diagnostic.analyses": {
+      "loopclosure": false
+    }
   }
 }

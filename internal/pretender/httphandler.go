@@ -2,6 +2,7 @@ package pretender
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"log/slog"
@@ -18,7 +19,7 @@ type response struct {
 	DelayMs    uint              `json:"delay_ms"`
 }
 
-type httpHandler struct {
+type HTTPHandler struct {
 	sync.Mutex
 	index     int
 	responses []response
@@ -26,14 +27,16 @@ type httpHandler struct {
 	logger    *slog.Logger
 }
 
-func NewHttpHandler(logger *slog.Logger) *httpHandler {
-	return &httpHandler{
+var errNoResponsesLeft = errors.New("no responses left")
+
+func NewHTTPHandler(logger *slog.Logger) *HTTPHandler {
+	return &HTTPHandler{
 		logger: logger,
 		fs:     osFileReader{},
 	}
 }
 
-func (hh *httpHandler) LoadResponsesFile(name string) (int, error) {
+func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 	content, err := fs.ReadFile(hh.fs, name)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read responses file [%s]: %w", name, err)
@@ -64,9 +67,9 @@ func (hh *httpHandler) LoadResponsesFile(name string) (int, error) {
 	return len(hh.responses), nil
 }
 
-func (hh *httpHandler) getNextResponse() (response, error) {
+func (hh *HTTPHandler) getNextResponse() (response, error) {
 	if hh.index >= len(hh.responses) {
-		return response{}, fmt.Errorf("no responses left")
+		return response{}, errNoResponsesLeft
 	}
 
 	response := hh.responses[hh.index]
@@ -75,7 +78,7 @@ func (hh *httpHandler) getNextResponse() (response, error) {
 	return response, nil
 }
 
-func (hh *httpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
+func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, _ *http.Request) {
 	hh.Lock()
 	defer hh.Unlock()
 
@@ -83,6 +86,7 @@ func (hh *httpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		hh.logger.Error("responding", "error", err)
+
 		return
 	}
 
@@ -94,12 +98,14 @@ func (hh *httpHandler) HandleFunc(w http.ResponseWriter, r *http.Request) {
 	for k, v := range res.Headers {
 		w.Header().Set(k, v)
 	}
+
 	w.WriteHeader(int(res.StatusCode))
 
 	_, err = fmt.Fprintf(w, "%s\n", res.Body)
 	if err != nil {
 		hh.logger.Error("responding", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+
 		return
 	}
 
