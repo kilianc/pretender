@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -48,13 +49,14 @@ func main() {
 		}),
 	)
 
-	hh := pretender.NewHttpHandler(logger)
+	hh := pretender.NewHTTPHandler(logger)
 
 	rn, err := hh.LoadResponsesFile(*responseFileName)
 	if err != nil {
 		logger.Error("error loading responses file", "error", err)
 		os.Exit(1)
 	}
+
 	logger.Info("loaded responses from file", "file", *responseFileName, "count", rn)
 
 	mux := http.NewServeMux()
@@ -63,7 +65,7 @@ func main() {
 
 	go func() {
 		err = server.ListenAndServe()
-		if err != http.ErrServerClosed {
+		if errors.Is(err, http.ErrServerClosed) {
 			logger.Error("error starting server", "error", err)
 			os.Exit(1)
 		}

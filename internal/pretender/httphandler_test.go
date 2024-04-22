@@ -35,7 +35,7 @@ func Test_HandleFunc(t *testing.T) {
 		},
 	}
 
-	hh := httpHandler{
+	hh := HTTPHandler{
 		responses: []response{
 			{
 				StatusCode: http.StatusOK,
@@ -120,7 +120,7 @@ func Test_LoadResponsesFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%q", tt.path), func(t *testing.T) {
-			hh := httpHandler{
+			hh := HTTPHandler{
 				logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 				fs:     mfs,
 			}
