@@ -30,7 +30,7 @@ func main() {
 
 		content, err := os.ReadFile(path)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to read file %q: %w", path, err)
 		}
 
 		versions := pattern.FindAllString(string(content), -1)
@@ -47,9 +47,9 @@ func main() {
 
 		return nil
 	})
-
 	if err != nil {
 		fmt.Println("error: failed to walk dir tree:", err)
+
 		return
 	}
 
@@ -59,9 +59,11 @@ func main() {
 
 	if len(versions) > 1 {
 		fmt.Println("\033[91m✘ error: multiple versions found:\033[0m")
+
 		for version, path := range versionSet {
 			fmt.Printf("\033[38;5;210m  %q: %q\033[0m\n", version, path)
 		}
+
 		fmt.Println("")
 		os.Exit(1)
 	}

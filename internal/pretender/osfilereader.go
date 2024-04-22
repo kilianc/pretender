@@ -10,5 +10,6 @@ type osFileReader struct {
 }
 
 func (fr osFileReader) ReadFile(name string) ([]byte, error) {
+	//nolint
 	return os.ReadFile(name)
 }
