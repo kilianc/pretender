@@ -2,6 +2,11 @@ PROJECT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 GOTESTSUM_VERSION := v1.11.0
 GOFUMPT_VERSION := v0.6.0
 RESPONSES_FILE ?= examples/example.json
+BINARY_NAME := pretender
+OS_LIST := darwin linux
+ARCH_LIST := arm64 amd64
+BUILD_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BINARY_NAME)_$(os)_$(arch)))
+RELEASE_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BINARY_NAME)_$(os)_$(arch).tar.gz))
 
 bin/golangci-lint:
 	@mkdir -p $(@D)
@@ -25,19 +30,33 @@ test: bin/gotestsum lint
 	@cd $(PROJECT_DIR) && $(PROJECT_DIR)/bin/gotestsum --format testdox -- -coverprofile=cover.out ./internal/...
 	@cd $(PROJECT_DIR) && go tool cover -func=cover.out > coverage-text.txt
 
-build:
-	CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/pretender cmd/pretender/main.go
+build: $(BUILD_TARGETS)
+
+$(BUILD_TARGETS):
+	@$(eval os = $(word 2, $(subst _, ,$@)))
+	@$(eval arch = $(word 3, $(subst _, ,$@)))
+	GOOS=$(os) GOARCH=$(arch) CGO_ENABLED=0 go build -ldflags "-s -w" -o $@ cmd/$(BINARY_NAME)/main.go
+
+release: $(RELEASE_TARGETS)
+
+$(RELEASE_TARGETS): clean build
+	@cp $(shell echo $@ | sed s/.tar.gz//) bin/$(BINARY_NAME)
+	cd bin && tar -czf $(shell basename $@) $(BINARY_NAME)
+	@rm bin/$(BINARY_NAME)
 
 run:
-	go run cmd/pretender/main.go --responses $(RESPONSES_FILE)
+	go run cmd/$(BINARY_NAME)/main.go --responses $(RESPONSES_FILE)
 
 docker-build:
-	docker build $(PROJECT_DIR) -t pretender:latest
+	docker build $(PROJECT_DIR) -t $(BINARY_NAME):latest
 
 docker-run: docker-build
-	docker run --rm -v $(PROJECT_DIR)/$(RESPONSES_FILE):/$(RESPONSES_FILE) -p 8080:8080 pretender:latest --responses /$(RESPONSES_FILE)
+	docker run --rm -v $(PROJECT_DIR)/$(RESPONSES_FILE):/$(RESPONSES_FILE) -p 8080:8080 $(BINARY_NAME):latest --responses /$(RESPONSES_FILE)
 
 version-check:
 	@go run tools/versioncheck/main.go
 
-.PHONY: lint format test build run docker-build docker-run version-check
+clean:
+	rm -rf bin/*
+
+.PHONY: lint format test build release run docker-build docker-run version-check clean
