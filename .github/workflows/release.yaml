@@ -74,4 +74,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const script = require('${{ github.workspace }}/.github/upload-release-assets.js')
-            await script({ context, github })
+            await script({ context, github }, '${{ github.event.inputs.tag || github.ref }}')
