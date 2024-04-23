@@ -8,7 +8,7 @@ RUN go mod download
 COPY ./ ./
 
 RUN make test
-RUN make build
+RUN CGO_ENABLED=0 go build -ldflags "-s -w" -o bin/pretender cmd/pretender/main.go
 
 FROM scratch AS release-stage
 
