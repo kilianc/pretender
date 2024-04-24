@@ -146,7 +146,7 @@ func Test_LoadResponsesFile(t *testing.T) {
 
 			// check if responses in the file are equal to expected
 			if err == nil && !reflect.DeepEqual(hh.responses, tt.expected) {
-				t.Errorf("got \"%v\", expect \"%v\"", hh.responses, tt.expected)
+				t.Errorf("\ngot    %q\nexpect %q", hh.responses, tt.expected)
 			}
 		})
 	}
