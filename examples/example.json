@@ -1,0 +1,20 @@
+[
+  {
+    "status_code": 200,
+    "body": "Hello World",
+    "headers": {
+      "content-type": "text/plain"
+    },
+    "delay_ms": 100
+  },
+  {
+    "status_code": 201,
+    "body": {
+      "message": "Hello World",
+      "to": ["everyone"]
+    },
+    "headers": {
+      "content-type": "application/json"
+    }
+  }
+]
