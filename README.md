@@ -25,7 +25,7 @@
 ██████╔╝██████╔╝█████╗     ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
 ██╔═══╝ ██╔══██╗██╔══╝     ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗
 ██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║
-╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.1.0
+╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.2.0
 
 • starting server on port 8080
 • using responses file: examples/example.json
@@ -35,7 +35,7 @@
 ### Install
 
 ```sh
-go install github.com/kilianc/pretender/cmd/pretender@v1.1.0
+go install github.com/kilianc/pretender/cmd/pretender@v1.2.0
 ```
 
 Or using Docker
@@ -44,7 +44,7 @@ Or using Docker
 docker run --rm -it \
   -p 8080:8080 \
   -v $(pwd)/examples:/examples \
-  kilianciuffolo/pretender:v1.1.0 --responses /examples/example.json
+  kilianciuffolo/pretender:v1.2.0 --responses /examples/example.json
 ```
 
 ### Usage

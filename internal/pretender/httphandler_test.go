@@ -39,12 +39,12 @@ func Test_HandleFunc(t *testing.T) {
 		responses: []response{
 			{
 				StatusCode: http.StatusOK,
-				Body:       "hello",
+				Body:       []byte("hello"),
 				Headers:    map[string]string{"content-type": "my/type1"},
 			},
 			{
 				StatusCode: http.StatusOK,
-				Body:       "world",
+				Body:       []byte("world"),
 				Headers:    map[string]string{"content-type": "my/type2"},
 			},
 		},
@@ -75,8 +75,9 @@ func Test_HandleFunc(t *testing.T) {
 func Test_LoadResponsesFile(t *testing.T) {
 	mfs := fstest.MapFS{
 		"some/path/valid.json": {Data: []byte(`[
-			{"body":"hello","headers":{"content-type":"application/json"},"delay_ms":1000},
-			{"status_code":404,"body":"world","headers":{"content-type":"application/json"}}
+			{"body":"hello","headers":{"content-type":"text/plain"},"delay_ms":1000},
+			{"status_code":404,"body":"world","headers":{"content-type":"text/plain"}},
+			{"status_code":404,"body":{"hello":"world"},"headers":{"content-type":"application/json"}}
 		]`)},
 		"some/path/plain.text":   {Data: []byte("hello\nworld\n")},
 		"some/path/invalid.json": {Data: []byte("invalid json")},
@@ -93,13 +94,19 @@ func Test_LoadResponsesFile(t *testing.T) {
 			[]response{
 				{
 					StatusCode: http.StatusOK,
-					Body:       "hello",
-					Headers:    map[string]string{"content-type": "application/json"},
+					Body:       []byte("hello"),
+					Headers:    map[string]string{"content-type": "text/plain"},
 					DelayMs:    1000,
 				},
 				{
 					StatusCode: http.StatusNotFound,
-					Body:       "world",
+					Body:       []byte("world"),
+					Headers:    map[string]string{"content-type": "text/plain"},
+					DelayMs:    0,
+				},
+				{
+					StatusCode: http.StatusNotFound,
+					Body:       []byte(`{"hello":"world"}`),
 					Headers:    map[string]string{"content-type": "application/json"},
 					DelayMs:    0,
 				},
@@ -109,9 +116,9 @@ func Test_LoadResponsesFile(t *testing.T) {
 			"some/path/plain.text",
 			"",
 			[]response{
-				{StatusCode: http.StatusOK, Body: "hello"},
-				{StatusCode: http.StatusOK, Body: "world"},
-				{StatusCode: http.StatusOK, Body: ""},
+				{StatusCode: http.StatusOK, Body: []byte("hello")},
+				{StatusCode: http.StatusOK, Body: []byte("world")},
+				{StatusCode: http.StatusOK, Body: []byte("")},
 			},
 		},
 		{"some/path/invalid.json", "failed to unmarshal responses", []response{}},
@@ -139,7 +146,7 @@ func Test_LoadResponsesFile(t *testing.T) {
 
 			// check if responses in the file are equal to expected
 			if err == nil && !reflect.DeepEqual(hh.responses, tt.expected) {
-				t.Errorf("got \"%v\", expect \"%v\"", hh.responses, tt.expected)
+				t.Errorf("\ngot    %q\nexpect %q", hh.responses, tt.expected)
 			}
 		})
 	}
