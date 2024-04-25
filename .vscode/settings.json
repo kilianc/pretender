@@ -1,8 +1,11 @@
 {
   "cSpell.words": [
     "doesnt",
+    "healthz",
     "kilianc",
-    "lmittmann"
+    "lmittmann",
+    "nestif",
+    "nolint"
   ],
   "markdownlint.config": {
     "MD033": false,

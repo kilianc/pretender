@@ -34,11 +34,13 @@
 
 ### Install
 
+With `go install`
+
 ```sh
 go install github.com/kilianc/pretender/cmd/pretender@v1.3.0
 ```
 
-Or using Docker
+With Docker
 
 ```sh
 docker run --rm -it \
@@ -47,12 +49,27 @@ docker run --rm -it \
   kilianciuffolo/pretender:v1.3.0 --responses /examples/example.json
 ```
 
+With `curl`
+
+```sh
+# change the os (linux or darwin) and arch (amd64 or arm64) based on your machine
+curl https://github.com/kilianc/pretender/releases/download/v1.3.0/pretender_darwin_arm64.tar.gz
+tar -xzf pretender_darwin_arm64.tar.gz
+./pretender --version
+```
+
 ### Usage
 
-Every line in `examples/example.json` will match one consecutive http response when hitting `http://localhost:8080`
+Every response in `examples/example.json` will match one consecutive http response when hitting `http://localhost:8080`
 
 ```sh
 pretender --port 8080 --responses examples/example.json
+```
+
+The server has a default `/healthz` endpoint that responds with a `200`. If this conflicts with your mock responses, it is possible to configure it by setting the `PRETENDER_HEALTH_CHECK_PATH` environment variable.
+
+```sh
+PRETENDER_HEALTH_CHECK_PATH=/alive pretender
 ```
 
 ### Responses File
@@ -109,6 +126,7 @@ These are the usual suspects
 make run
 make build
 make test
+make cover
 ```
 
 After running `make build` the binary available in the `bin/` folder

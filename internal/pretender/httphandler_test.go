@@ -33,33 +33,45 @@ func Test_HandleFunc(t *testing.T) {
 				Repeat:     2,
 			},
 		},
-		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
+		logger:          slog.New(slog.NewTextHandler(io.Discard, nil)),
+		healthCheckPath: "/healthz",
 	}
 
 	tests := []struct {
+		path        string
 		statusCode  int
 		body        string
 		contentType string
 	}{
 		{
+			path:        "/",
 			statusCode:  http.StatusOK,
 			body:        "hello\n",
 			contentType: "my/type1",
 		},
 		{
+			path:        "/",
 			statusCode:  http.StatusOK,
 			body:        "world\n",
 			contentType: "my/type2",
 		},
 		{
+			path:       "/healthz",
+			statusCode: http.StatusOK,
+			body:       "ok\n",
+		},
+		{
+			path:       "/",
 			statusCode: http.StatusOK,
 			body:       "twice\n",
 		},
 		{
+			path:       "/",
 			statusCode: http.StatusOK,
 			body:       "twice\n",
 		},
 		{
+			path:        "/",
 			statusCode:  http.StatusInternalServerError,
 			body:        "no responses left\n",
 			contentType: "text/plain; charset=utf-8",
@@ -67,9 +79,9 @@ func Test_HandleFunc(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(fmt.Sprintf("%v %q", tt.statusCode, tt.body), func(t *testing.T) {
+		t.Run(fmt.Sprintf(" %v %v %v", tt.path, tt.statusCode, tt.body), func(t *testing.T) {
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, "/", nil)
+			r := httptest.NewRequest(http.MethodGet, tt.path, nil)
 			hh.HandleFunc(w, r)
 
 			if w.Body.String() != tt.body {
