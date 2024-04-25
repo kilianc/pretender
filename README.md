@@ -52,7 +52,7 @@ docker run --rm -it \
 With `curl`
 
 ```sh
-# change the os and arch based on your machine
+# change the os (linux or darwin) and arch (amd64 or arm64) based on your machine
 curl https://github.com/kilianc/pretender/releases/download/v1.3.0/pretender_darwin_arm64.tar.gz
 tar -xzf pretender_darwin_arm64.tar.gz
 ./pretender --version
@@ -126,6 +126,7 @@ These are the usual suspects
 make run
 make build
 make test
+make cover
 ```
 
 After running `make build` the binary available in the `bin/` folder
