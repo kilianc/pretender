@@ -31,6 +31,9 @@ test: bin/gotestsum lint
 	@cd $(PROJECT_DIR) && $(PROJECT_DIR)/bin/gotestsum --format testdox -- -coverprofile=cover.out ./internal/...
 	@cd $(PROJECT_DIR) && go tool cover -func=cover.out > coverage-text.txt
 
+cover: test
+	@cd $(PROJECT_DIR) && go tool cover -html=cover.out
+
 build: $(BUILD_TARGETS)
 
 $(BUILD_TARGETS):
