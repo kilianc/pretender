@@ -49,7 +49,7 @@ func main() {
 		}),
 	)
 
-	hh := pretender.NewHTTPHandler(logger, os.Getenv("PRETENDER_HEALTH_PATH"))
+	hh := pretender.NewHTTPHandler(logger, os.Getenv("PRETENDER_HEALTH_CHECK_PATH"))
 
 	rn, err := hh.LoadResponsesFile(*responseFileName)
 	if err != nil {
