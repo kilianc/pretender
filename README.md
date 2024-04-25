@@ -25,7 +25,7 @@
 ██████╔╝██████╔╝█████╗     ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
 ██╔═══╝ ██╔══██╗██╔══╝     ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗
 ██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║
-╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.2.0
+╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.3.0
 
 • starting server on port 8080
 • using responses file: examples/example.json
@@ -35,7 +35,7 @@
 ### Install
 
 ```sh
-go install github.com/kilianc/pretender/cmd/pretender@v1.2.0
+go install github.com/kilianc/pretender/cmd/pretender@v1.3.0
 ```
 
 Or using Docker
@@ -44,7 +44,7 @@ Or using Docker
 docker run --rm -it \
   -p 8080:8080 \
   -v $(pwd)/examples:/examples \
-  kilianciuffolo/pretender:v1.2.0 --responses /examples/example.json
+  kilianciuffolo/pretender:v1.3.0 --responses /examples/example.json
 ```
 
 ### Usage
@@ -74,26 +74,32 @@ A `JSON` file allows more flexibility and controls:
     "status_code": 200,
     "body": "hello",
     "headers": {"content-type":"text/plain"},
-    "delay_ms": 1000
+    "delay_ms": 1000,
+    "repeat": 5
   },
   {
     "body": {
       "hello": "world"
     },
-    "headers": {"Content-Type":"application/json"},
+    "headers": {"Content-Type":"application/json"}
   },
   // ...
+  {
+    "body": "will repeat forever",
+    "repeat": -1
+  }
 ]
 ```
 
 #### A valid response definition can contain the following fields
 
-| name          | description                            | default                         |
-| ------------- | -------------------------------------- | ------------------------------- |
-| `status_code` | HTTP status code                       | `200`                           |
-| `body`        | HTTP response body                     | `""`                            |
-| `headers`     | HTTP headers                           | `{"content-type":"text/plain"}` |
-| `delay_ms`    | Number of ms to wait before responding | `0`                             |
+| name          | description                                          | default                         |
+| ------------- | ---------------------------------------------------- | ------------------------------- |
+| `status_code` | HTTP status code                                     | `200`                           |
+| `body`        | HTTP response body                                   | `""`                            |
+| `headers`     | HTTP headers                                         | `{"content-type":"text/plain"}` |
+| `delay_ms`    | Number of ms to wait before responding               | `0`                             |
+| `repeat`      | Number of times the response repeats or `-1` for `∞` | `1`                             |
 
 ### Local Development
 
