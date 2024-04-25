@@ -2,8 +2,7 @@
   {
     "status_code": 200,
     "body": "hello",
-    "headers": {"content-type":"text/plain"},
-    "repeat": -1
+    "headers": {"content-type":"text/plain"}
   },
   {
     "body": {
