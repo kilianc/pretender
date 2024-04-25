@@ -14,7 +14,7 @@ import (
 
 type response struct {
 	StatusCode uint              `json:"status_code"`
-	Body       string            `json:"body"`
+	Body       json.RawMessage   `json:"body"`
 	Headers    map[string]string `json:"headers"`
 	DelayMs    uint              `json:"delay_ms"`
 }
@@ -54,13 +54,18 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 			if hh.responses[i].StatusCode == 0 {
 				hh.responses[i].StatusCode = 200
 			}
+
+			// if the body is a string, remove the quotes
+			if string(hh.responses[i].Body[0]) == `"` {
+				hh.responses[i].Body = hh.responses[i].Body[1 : len(hh.responses[i].Body)-1]
+			}
 		}
 	} else {
 		lines := strings.Split(string(content), "\n")
 		hh.responses = make([]response, len(lines))
 
 		for i, line := range lines {
-			hh.responses[i] = response{StatusCode: 200, Body: line}
+			hh.responses[i] = response{StatusCode: 200, Body: []byte(line)}
 		}
 	}
 
@@ -111,7 +116,7 @@ func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, _ *http.Request) {
 
 	hh.logger.Info("responding",
 		"status_code", res.StatusCode,
-		"body", res.Body,
+		"body", string(res.Body),
 		"headers", res.Headers,
 		"delay", delay,
 	)

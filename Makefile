@@ -1,6 +1,7 @@
 PROJECT_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 GOTESTSUM_VERSION := v1.11.0
 GOFUMPT_VERSION := v0.6.0
+GOLANGCI_LINT_VERSION := v1.57.2
 RESPONSES_FILE ?= examples/example.json
 BINARY_NAME := pretender
 OS_LIST := darwin linux
@@ -10,7 +11,7 @@ RELEASE_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BIN
 
 bin/golangci-lint:
 	@mkdir -p $(@D)
-	GOBIN=$(PROJECT_DIR)/$(@D) go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	GOBIN=$(PROJECT_DIR)/$(@D) go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 
 lint: bin/golangci-lint
 	@bin/golangci-lint run
