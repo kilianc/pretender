@@ -40,7 +40,7 @@ With `go install`
 go install github.com/kilianc/pretender/cmd/pretender@v1.4.0
 ```
 
-With Docker
+With `docker`
 
 ```sh
 docker run --rm -it \
