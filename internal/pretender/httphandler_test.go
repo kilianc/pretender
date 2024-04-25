@@ -13,6 +13,29 @@ import (
 )
 
 func Test_HandleFunc(t *testing.T) {
+	hh := HTTPHandler{
+		responses: []response{
+			{
+				StatusCode: http.StatusOK,
+				Body:       []byte("hello"),
+				Headers:    map[string]string{"content-type": "my/type1"},
+				Repeat:     1,
+			},
+			{
+				StatusCode: http.StatusOK,
+				Body:       []byte("world"),
+				Headers:    map[string]string{"content-type": "my/type2"},
+				Repeat:     1,
+			},
+			{
+				StatusCode: http.StatusOK,
+				Body:       []byte("twice"),
+				Repeat:     2,
+			},
+		},
+		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
+	}
+
 	tests := []struct {
 		statusCode  int
 		body        string
@@ -29,26 +52,18 @@ func Test_HandleFunc(t *testing.T) {
 			contentType: "my/type2",
 		},
 		{
+			statusCode: http.StatusOK,
+			body:       "twice\n",
+		},
+		{
+			statusCode: http.StatusOK,
+			body:       "twice\n",
+		},
+		{
 			statusCode:  http.StatusInternalServerError,
 			body:        "no responses left\n",
 			contentType: "text/plain; charset=utf-8",
 		},
-	}
-
-	hh := HTTPHandler{
-		responses: []response{
-			{
-				StatusCode: http.StatusOK,
-				Body:       []byte("hello"),
-				Headers:    map[string]string{"content-type": "my/type1"},
-			},
-			{
-				StatusCode: http.StatusOK,
-				Body:       []byte("world"),
-				Headers:    map[string]string{"content-type": "my/type2"},
-			},
-		},
-		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
 
 	for _, tt := range tests {
@@ -72,12 +87,38 @@ func Test_HandleFunc(t *testing.T) {
 	}
 }
 
+func Test_HandleFuncNegativeRepeat(t *testing.T) {
+	hh := HTTPHandler{
+		responses: []response{
+			{
+				StatusCode: http.StatusOK,
+				Body:       []byte("hello"),
+				Headers:    map[string]string{"content-type": "my/type1"},
+				Repeat:     -1,
+			},
+		},
+		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
+	}
+
+	t.Run("should repeat forever", func(t *testing.T) {
+		for range 100 {
+			w := httptest.NewRecorder()
+			r := httptest.NewRequest(http.MethodGet, "/", nil)
+			hh.HandleFunc(w, r)
+
+			if w.Body.String() != "hello\n" {
+				t.Fatalf("got %q, expect %q", w.Body, "hello\n")
+			}
+		}
+	})
+}
+
 func Test_LoadResponsesFile(t *testing.T) {
 	mfs := fstest.MapFS{
 		"some/path/valid.json": {Data: []byte(`[
-			{"body":"hello","headers":{"content-type":"text/plain"},"delay_ms":1000},
-			{"status_code":404,"body":"world","headers":{"content-type":"text/plain"}},
-			{"status_code":404,"body":{"hello":"world"},"headers":{"content-type":"application/json"}}
+			{"body":"hello","headers":{"content-type":"text/plain"},"delay_ms":1000,"repeat":-1},
+			{"status_code":404,"body":"world","headers":{"content-type":"text/plain"},"repeat":0},
+			{"status_code":404,"body":{"hello":"world"},"headers":{"content-type":"application/json"},"repeat":5}
 		]`)},
 		"some/path/plain.text":   {Data: []byte("hello\nworld\n")},
 		"some/path/invalid.json": {Data: []byte("invalid json")},
@@ -97,18 +138,21 @@ func Test_LoadResponsesFile(t *testing.T) {
 					Body:       []byte("hello"),
 					Headers:    map[string]string{"content-type": "text/plain"},
 					DelayMs:    1000,
+					Repeat:     -1,
 				},
 				{
 					StatusCode: http.StatusNotFound,
 					Body:       []byte("world"),
 					Headers:    map[string]string{"content-type": "text/plain"},
 					DelayMs:    0,
+					Repeat:     1,
 				},
 				{
 					StatusCode: http.StatusNotFound,
 					Body:       []byte(`{"hello":"world"}`),
 					Headers:    map[string]string{"content-type": "application/json"},
 					DelayMs:    0,
+					Repeat:     5,
 				},
 			},
 		},
@@ -116,9 +160,9 @@ func Test_LoadResponsesFile(t *testing.T) {
 			"some/path/plain.text",
 			"",
 			[]response{
-				{StatusCode: http.StatusOK, Body: []byte("hello")},
-				{StatusCode: http.StatusOK, Body: []byte("world")},
-				{StatusCode: http.StatusOK, Body: []byte("")},
+				{StatusCode: http.StatusOK, Body: []byte("hello"), Repeat: 1},
+				{StatusCode: http.StatusOK, Body: []byte("world"), Repeat: 1},
+				{StatusCode: http.StatusOK, Body: []byte(""), Repeat: 1},
 			},
 		},
 		{"some/path/invalid.json", "failed to unmarshal responses", []response{}},

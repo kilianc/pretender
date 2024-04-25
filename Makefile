@@ -38,8 +38,9 @@ $(BUILD_TARGETS):
 	@$(eval arch = $(word 3, $(subst _, ,$@)))
 	GOOS=$(os) GOARCH=$(arch) CGO_ENABLED=0 go build -ldflags "-s -w" -o $@ cmd/$(BINARY_NAME)/main.go
 
+release: VERSION = $(shell go run cmd/$(BINARY_NAME)/main.go --responses $(RESPONSES_FILE) --version)
 release: $(RELEASE_TARGETS)
-	GOPROXY=proxy.golang.org go list -m github.com/kilianc/$(BINARY_NAME)@v1.2.0
+	GOPROXY=proxy.golang.org go list -m github.com/kilianc/$(BINARY_NAME)@$(VERSION)
 
 $(RELEASE_TARGETS): clean build
 	@cp $(shell echo $@ | sed s/.tar.gz//) bin/$(BINARY_NAME)
