@@ -23,18 +23,37 @@ type response struct {
 
 type HTTPHandler struct {
 	sync.Mutex
-	index     int
-	responses []response
-	fs        fs.FS
-	logger    *slog.Logger
+	index      int
+	responses  []response
+	fs         fs.FS
+	logger     *slog.Logger
+	healthPath string
 }
 
 var errNoResponsesLeft = errors.New("no responses left")
 
-func NewHTTPHandler(logger *slog.Logger) *HTTPHandler {
+var healthResponse = &response{
+	StatusCode: 200,
+	Body:       []byte("ok"),
+	Headers:    map[string]string{},
+	DelayMs:    0,
+	Repeat:     1,
+	count:      1,
+}
+
+func NewHTTPHandler(logger *slog.Logger, healthPath ...string) *HTTPHandler {
+	if len(healthPath) == 0 {
+		healthPath = append(healthPath, "/healthz")
+	}
+
+	if healthPath[0] == "" {
+		healthPath[0] = "/healthz"
+	}
+
 	return &HTTPHandler{
-		logger: logger,
-		fs:     osFileReader{},
+		logger:     logger,
+		fs:         osFileReader{},
+		healthPath: healthPath[0],
 	}
 }
 
@@ -79,7 +98,11 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 	return len(hh.responses), nil
 }
 
-func (hh *HTTPHandler) getNextResponse() (*response, error) {
+func (hh *HTTPHandler) getNextResponse(path string) (*response, error) {
+	if path == hh.healthPath {
+		return healthResponse, nil
+	}
+
 	if hh.index >= len(hh.responses) {
 		return &response{}, errNoResponsesLeft
 	}
@@ -94,11 +117,11 @@ func (hh *HTTPHandler) getNextResponse() (*response, error) {
 	return response, nil
 }
 
-func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, _ *http.Request) {
+func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, rq *http.Request) {
 	hh.Lock()
 	defer hh.Unlock()
 
-	r, err := hh.getNextResponse()
+	r, err := hh.getNextResponse(rq.URL.Path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		hh.logger.Error("responding", "error", err)
