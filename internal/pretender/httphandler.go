@@ -23,11 +23,11 @@ type response struct {
 
 type HTTPHandler struct {
 	sync.Mutex
-	index      int
-	responses  []response
-	fs         fs.FS
-	logger     *slog.Logger
-	healthPath string
+	index           int
+	responses       []response
+	fs              fs.FS
+	logger          *slog.Logger
+	healthCheckPath string
 }
 
 var errNoResponsesLeft = errors.New("no responses left")
@@ -41,19 +41,15 @@ var healthResponse = &response{
 	count:      1,
 }
 
-func NewHTTPHandler(logger *slog.Logger, healthPath ...string) *HTTPHandler {
-	if len(healthPath) == 0 {
-		healthPath = append(healthPath, "/healthz")
-	}
-
-	if healthPath[0] == "" {
-		healthPath[0] = "/healthz"
+func NewHTTPHandler(logger *slog.Logger, healthCheckPath ...string) *HTTPHandler {
+	if len(healthCheckPath) == 0 || healthCheckPath[0] == "" {
+		healthCheckPath = []string{"/healthz"}
 	}
 
 	return &HTTPHandler{
-		logger:     logger,
-		fs:         osFileReader{},
-		healthPath: healthPath[0],
+		logger:          logger,
+		fs:              osFileReader{},
+		healthCheckPath: healthCheckPath[0],
 	}
 }
 
@@ -99,7 +95,7 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 }
 
 func (hh *HTTPHandler) getNextResponse(path string) (*response, error) {
-	if path == hh.healthPath {
+	if path == hh.healthCheckPath {
 		return healthResponse, nil
 	}
 

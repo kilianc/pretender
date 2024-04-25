@@ -33,8 +33,8 @@ func Test_HandleFunc(t *testing.T) {
 				Repeat:     2,
 			},
 		},
-		logger:     slog.New(slog.NewTextHandler(io.Discard, nil)),
-		healthPath: "/healthz",
+		logger:          slog.New(slog.NewTextHandler(io.Discard, nil)),
+		healthCheckPath: "/healthz",
 	}
 
 	tests := []struct {
