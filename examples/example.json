@@ -1,20 +1,18 @@
 [
   {
     "status_code": 200,
-    "body": "Hello World",
-    "headers": {
-      "content-type": "text/plain"
-    },
-    "delay_ms": 100
+    "body": "hello",
+    "headers": {"content-type":"text/plain"},
+    "repeat": -1
   },
   {
-    "status_code": 201,
     "body": {
-      "message": "Hello World",
-      "to": ["everyone"]
+      "hello": "world"
     },
-    "headers": {
-      "content-type": "application/json"
-    }
+    "headers": {"Content-Type":"application/json"}
+  },
+  {
+    "body": "will repeat forever",
+    "repeat": -1
   }
 ]

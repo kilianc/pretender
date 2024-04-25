@@ -17,6 +17,8 @@ type response struct {
 	Body       json.RawMessage   `json:"body"`
 	Headers    map[string]string `json:"headers"`
 	DelayMs    uint              `json:"delay_ms"`
+	Repeat     int               `json:"repeat"`
+	count      int
 }
 
 type HTTPHandler struct {
@@ -42,6 +44,7 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 		return 0, fmt.Errorf("failed to read responses file [%s]: %w", name, err)
 	}
 
+	//nolint:nestif
 	if strings.HasSuffix(name, ".json") {
 		hh.responses = []response{}
 
@@ -55,6 +58,10 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 				hh.responses[i].StatusCode = 200
 			}
 
+			if hh.responses[i].Repeat == 0 {
+				hh.responses[i].Repeat = 1
+			}
+
 			// if the body is a string, remove the quotes
 			if string(hh.responses[i].Body[0]) == `"` {
 				hh.responses[i].Body = hh.responses[i].Body[1 : len(hh.responses[i].Body)-1]
@@ -65,20 +72,24 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 		hh.responses = make([]response, len(lines))
 
 		for i, line := range lines {
-			hh.responses[i] = response{StatusCode: 200, Body: []byte(line)}
+			hh.responses[i] = response{StatusCode: 200, Body: []byte(line), Repeat: 1}
 		}
 	}
 
 	return len(hh.responses), nil
 }
 
-func (hh *HTTPHandler) getNextResponse() (response, error) {
+func (hh *HTTPHandler) getNextResponse() (*response, error) {
 	if hh.index >= len(hh.responses) {
-		return response{}, errNoResponsesLeft
+		return &response{}, errNoResponsesLeft
 	}
 
-	response := hh.responses[hh.index]
-	hh.index++
+	response := &hh.responses[hh.index]
+	response.count++
+
+	if response.Repeat == response.count {
+		hh.index++
+	}
 
 	return response, nil
 }
@@ -87,7 +98,7 @@ func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, _ *http.Request) {
 	hh.Lock()
 	defer hh.Unlock()
 
-	res, err := hh.getNextResponse()
+	r, err := hh.getNextResponse()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		hh.logger.Error("responding", "error", err)
@@ -95,18 +106,18 @@ func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
-	delay := time.Duration(res.DelayMs) * time.Millisecond
-	if res.DelayMs > 0 {
+	delay := time.Duration(r.DelayMs) * time.Millisecond
+	if r.DelayMs > 0 {
 		time.Sleep(delay)
 	}
 
-	for k, v := range res.Headers {
+	for k, v := range r.Headers {
 		w.Header().Set(k, v)
 	}
 
-	w.WriteHeader(int(res.StatusCode))
+	w.WriteHeader(int(r.StatusCode))
 
-	_, err = fmt.Fprintf(w, "%s\n", res.Body)
+	_, err = fmt.Fprintf(w, "%s\n", r.Body)
 	if err != nil {
 		hh.logger.Error("responding", "error", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -115,9 +126,10 @@ func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	hh.logger.Info("responding",
-		"status_code", res.StatusCode,
-		"body", string(res.Body),
-		"headers", res.Headers,
+		"status_code", r.StatusCode,
+		"body", string(r.Body),
+		"headers", r.Headers,
 		"delay", delay,
+		"repeat", strings.Replace(fmt.Sprintf("%d/%d", r.count, r.Repeat), "-1", "∞", -1),
 	)
 }
