@@ -14,16 +14,31 @@ func main() {
 	pattern := regexp.MustCompile(`v[0-9]\.[0-9]\.[0-9]`)
 	versionSet := map[string][]string{}
 	extensions := []string{".go", ".md"}
-	skipList := []string{"CHANGELOG.md"}
+	skipList := []string{"CHANGELOG.md", "CHANGELOG.tpl.md"}
 
-	flag.Parse()
-	versionTag := strings.Replace(flag.Arg(0), "refs/tags/", "", 1)
+	{
+		flag.Parse()
+		versionTag := strings.Replace(flag.Arg(0), "refs/tags/", "", 1)
 
-	if versionTag != "" {
-		versionSet[versionTag] = []string{".git"}
+		if versionTag != "" {
+			versionSet[versionTag] = append(versionSet[versionTag], ".git")
+		}
 	}
 
 	fmt.Println("")
+
+	{
+		fmt.Printf(" \033[38;5;245m• checking CHANGELOG.md\033[0m\n")
+
+		content, err := os.ReadFile("CHANGELOG.md")
+		if err != nil {
+			fmt.Printf("failed to read file \"CHANGELOG.md\": %v", err)
+			os.Exit(1)
+		}
+
+		latestVersion := pattern.FindString(string(content))
+		versionSet[latestVersion] = append(versionSet[latestVersion], "CHANGELOG.md")
+	}
 
 	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -63,8 +78,7 @@ func main() {
 	})
 	if err != nil {
 		fmt.Println("error: failed to walk dir tree:", err)
-
-		return
+		os.Exit(1)
 	}
 
 	fmt.Println("")
