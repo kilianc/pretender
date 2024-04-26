@@ -18,7 +18,7 @@ import (
 	"golang.org/x/term"
 )
 
-const version = "v1.4.0"
+const version = "v1.5.1"
 
 var isTTY = term.IsTerminal(int(os.Stdout.Fd()))
 
@@ -70,7 +70,7 @@ func main() {
 
 	go func() {
 		err = server.ListenAndServe()
-		if errors.Is(err, http.ErrServerClosed) {
+		if !errors.Is(err, http.ErrServerClosed) {
 			logger.Error("error starting server", "error", err)
 			os.Exit(1)
 		}

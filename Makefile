@@ -55,7 +55,7 @@ bin/git-chglog:
 	GOBIN=$(PROJECT_DIR)/$(@D) go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
 
 changelog: bin/git-chglog
-	@bin/git-chglog -o CHANGELOG.md
+	@bin/git-chglog -o CHANGELOG.md --next-tag $(tag)
 
 run:
 	go run cmd/$(BINARY_NAME)/main.go --responses $(RESPONSES_FILE)
