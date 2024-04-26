@@ -9,14 +9,18 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/kilianc/pretender/internal/pretender"
 	"github.com/lmittmann/tint"
+	"golang.org/x/term"
 )
 
 const version = "v1.3.0"
+
+var isTTY = term.IsTerminal(int(os.Stdout.Fd()))
 
 func main() {
 	printVersion := flag.Bool("version", false, "print version and exit")
@@ -29,23 +33,24 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Println("")
-	fmt.Println("██████╗ ██████╗ ███████╗████████╗███████╗███╗   ██╗██████╗ ███████╗██████╗ ")
-	fmt.Println("██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗")
-	fmt.Println("██████╔╝██████╔╝█████╗     ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝")
-	fmt.Println("██╔═══╝ ██╔══██╗██╔══╝     ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗")
-	fmt.Println("██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║")
-	fmt.Println("╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝", version)
-	fmt.Println("")
-	fmt.Printf("\033[32m•\033[0m starting server on port %d\n", *port)
-	fmt.Printf("\033[32m•\033[0m using responses file: %s\n", *responseFileName)
-	fmt.Printf("\033[32m•\033[0m press ctrl+c to stop\n")
-	fmt.Println("")
+	p("")
+	p("██████╗ ██████╗ ███████╗████████╗███████╗███╗   ██╗██████╗ ███████╗██████╗")
+	p("██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔════╝████╗  ██║██╔══██╗██╔════╝██╔══██╗")
+	p("██████╔╝██████╔╝█████╗     ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝")
+	p("██╔═══╝ ██╔══██╗██╔══╝     ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗")
+	p("██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║")
+	p("╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ %s", version)
+	p("")
+	p("\033[32m•\033[0m starting server on port %d", *port)
+	p("\033[32m•\033[0m using responses file: %s", *responseFileName)
+	p("\033[32m•\033[0m press ctrl+c to stop")
+	p("")
 
 	logger := slog.New(
 		tint.NewHandler(os.Stderr, &tint.Options{
 			Level:      slog.LevelDebug,
 			TimeFormat: time.Kitchen,
+			NoColor:    !isTTY,
 		}),
 	)
 
@@ -82,4 +87,15 @@ func main() {
 		logger.Error("error shutting down server", "error", err)
 		os.Exit(1)
 	}
+}
+
+func p(format string, a ...any) {
+	s := fmt.Sprintf(format, a...)
+
+	if !isTTY {
+		s = strings.ReplaceAll(s, "\033[32m", "")
+		s = strings.ReplaceAll(s, "\033[0m", "")
+	}
+
+	fmt.Fprintln(os.Stderr, s)
 }
