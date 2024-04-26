@@ -10,10 +10,11 @@ import (
 	"testing"
 )
 
+var discardLogger = slog.New(slog.NewTextHandler(io.Discard, nil))
+
 func Test_NewHTTPMux(t *testing.T) {
-	discardLogger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	responseFileName := fmt.Sprintf("%s/response.txt", t.TempDir())
-	os.WriteFile(responseFileName, []byte(`hi!\n`), 0o644)
+	responseFileName := fmt.Sprintf("%s/response.json", t.TempDir())
+	os.WriteFile(responseFileName, []byte(`[{"delay_ms":1}]`), 0o644)
 
 	t.Run("should error out when file fails to load", func(t *testing.T) {
 		server, rn, err := NewServeMux("no.json", discardLogger)
@@ -32,10 +33,13 @@ func Test_NewHTTPMux(t *testing.T) {
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(http.MethodGet, "/path", nil)
 			server.ServeHTTP(w, r)
+			server.ServeHTTP(w, r)
 
 			if w.Result().StatusCode != http.StatusOK {
 				t.Errorf("expected status code 200, got %d", w.Result().StatusCode)
 			}
+
+			server.ServeHTTP(w, r)
 		}
 	})
 
@@ -51,6 +55,29 @@ func Test_NewHTTPMux(t *testing.T) {
 
 		if w.Result().StatusCode != http.StatusOK {
 			t.Errorf("expected status code 200, got %d", w.Result().StatusCode)
+		}
+	})
+}
+
+func Test_NewServer(t *testing.T) {
+	responseFileName := fmt.Sprintf("%s/response.txt", t.TempDir())
+	os.WriteFile(responseFileName, []byte(`hi!\n`), 0o644)
+
+	t.Run("should error out when file fails to load", func(t *testing.T) {
+		server, _, err := NewServer(8080, "no.json", discardLogger)
+		if err == nil {
+			t.Errorf("expected an error, got %v", server)
+		}
+	})
+
+	t.Run("should return a server", func(t *testing.T) {
+		server, _, err := NewServer(8080, responseFileName, discardLogger)
+		if err != nil {
+			t.Errorf("expected no error, got %v", err)
+		}
+
+		if server == nil {
+			t.Errorf("expected a server, got %v", server)
 		}
 	})
 }

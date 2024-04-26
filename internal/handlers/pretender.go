@@ -78,7 +78,7 @@ func (hh *Pretender) LoadResponsesFile(name string) (int, error) {
 			}
 
 			// if the body is a string, remove the quotes
-			if string(hh.responses[i].Body[0]) == `"` {
+			if len(hh.responses[i].Body) > 0 && string(hh.responses[i].Body[0]) == `"` {
 				hh.responses[i].Body = hh.responses[i].Body[1 : len(hh.responses[i].Body)-1]
 			}
 		}
