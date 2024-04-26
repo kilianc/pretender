@@ -53,7 +53,7 @@ With `curl`
 
 ```sh
 # change the os (linux or darwin) and arch (amd64 or arm64) based on your machine
-curl https://github.com/kilianc/pretender/releases/download/v1.4.0/pretender_darwin_arm64.tar.gz
+curl -O https://github.com/kilianc/pretender/releases/download/v1.4.0/pretender_darwin_arm64.tar.gz
 tar -xzf pretender_darwin_arm64.tar.gz
 ./pretender --version
 ```
