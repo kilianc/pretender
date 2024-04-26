@@ -1,17 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strings"
 )
 
 func main() {
 	pattern := regexp.MustCompile(`v[0-9]\.[0-9]\.[0-9]`)
 	versionSet := map[string][]string{}
 	extensions := []string{".go", ".md"}
+
+	flag.Parse()
+	versionTag := strings.Replace(flag.Arg(0), "refs/tags/", "", 1)
+
+	if versionTag != "" {
+		versionSet[versionTag] = []string{".git"}
+	}
 
 	fmt.Println("")
 
