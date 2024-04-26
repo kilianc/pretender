@@ -50,6 +50,13 @@ $(RELEASE_TARGETS): clean build
 	cd bin && tar -czf $(shell basename $@) $(BINARY_NAME)
 	@rm bin/$(BINARY_NAME)
 
+bin/git-chglog:
+	@mkdir -p $(@D)
+	GOBIN=$(PROJECT_DIR)/$(@D) go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
+
+changelog: bin/git-chglog
+	@bin/git-chglog -o CHANGELOG.md
+
 run:
 	go run cmd/$(BINARY_NAME)/main.go --responses $(RESPONSES_FILE)
 
