@@ -1,4 +1,18 @@
 
+<a name="v1.5.1"></a>
+## [v1.5.1](https://github.com/kilianc/pretender/compare/v1.4.0...v1.5.1)
+
+> 2024-04-26
+
+### Feat
+
+* strip colors from non TTY output ([#54](https://github.com/kilianc/pretender/issues/54))
+
+### Fix
+
+* handle server shutdown correctly
+
+
 <a name="v1.4.0"></a>
 ## [v1.4.0](https://github.com/kilianc/pretender/compare/v1.3.0...v1.4.0)
 
