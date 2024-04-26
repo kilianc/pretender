@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/kilianc/pretender/internal/pretender"
+	"github.com/kilianc/pretender/pkg/pretender"
 	"github.com/lmittmann/tint"
 	"golang.org/x/term"
 )
@@ -54,19 +54,8 @@ func main() {
 		}),
 	)
 
-	hh := pretender.NewHTTPHandler(logger, os.Getenv("PRETENDER_HEALTH_CHECK_PATH"))
-
-	rn, err := hh.LoadResponsesFile(*responseFileName)
-	if err != nil {
-		logger.Error("error loading responses file", "error", err)
-		os.Exit(1)
-	}
-
+	server, rn, err := pretender.NewServer(*port, *responseFileName, logger)
 	logger.Info("loaded responses from file", "file", *responseFileName, "count", rn)
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", hh.HandleFunc)
-	server := &http.Server{Addr: fmt.Sprintf(":%d", *port), Handler: mux}
 
 	go func() {
 		err = server.ListenAndServe()
