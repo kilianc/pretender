@@ -1,5 +1,6 @@
 *
 !cmd
 !internal
+!pkg
 !go.*
 !Makefile
