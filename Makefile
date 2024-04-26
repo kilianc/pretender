@@ -60,7 +60,7 @@ docker-run: docker-build
 	docker run --rm -v $(PROJECT_DIR)/$(RESPONSES_FILE):/$(RESPONSES_FILE) -p 8080:8080 $(BINARY_NAME):latest --responses /$(RESPONSES_FILE)
 
 version-check:
-	@go run tools/versioncheck/main.go
+	@go run tools/versioncheck/main.go $(tag)
 
 clean:
 	rm -rf bin/*
