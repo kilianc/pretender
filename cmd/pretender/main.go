@@ -55,6 +55,11 @@ func main() {
 	)
 
 	server, rn, err := pretender.NewServer(*port, *responseFileName, logger, os.Getenv("PRETENDER_HEALTH_CHECK_PATH"))
+	if err != nil {
+		logger.Error("error loading responses file", "error", err)
+		os.Exit(1)
+	}
+
 	logger.Info("loaded responses from file", "file", *responseFileName, "count", rn)
 
 	go func() {
