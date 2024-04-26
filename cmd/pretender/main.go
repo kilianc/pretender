@@ -70,7 +70,7 @@ func main() {
 
 	go func() {
 		err = server.ListenAndServe()
-		if errors.Is(err, http.ErrServerClosed) {
+		if !errors.Is(err, http.ErrServerClosed) {
 			logger.Error("error starting server", "error", err)
 			os.Exit(1)
 		}
