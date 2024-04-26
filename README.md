@@ -25,7 +25,7 @@
 ██████╔╝██████╔╝█████╗     ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
 ██╔═══╝ ██╔══██╗██╔══╝     ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗
 ██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║
-╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.4.0
+╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.5.1
 
 • starting server on port 8080
 • using responses file: examples/example.json
@@ -37,7 +37,7 @@
 With `go install`
 
 ```sh
-go install github.com/kilianc/pretender/cmd/pretender@v1.4.0
+go install github.com/kilianc/pretender/cmd/pretender@v1.5.1
 ```
 
 With `docker`
@@ -46,14 +46,14 @@ With `docker`
 docker run --rm -it \
   -p 8080:8080 \
   -v $(pwd)/examples:/examples \
-  kilianciuffolo/pretender:v1.4.0 --responses /examples/example.json
+  kilianciuffolo/pretender:v1.5.1 --responses /examples/example.json
 ```
 
 With `curl`
 
 ```sh
 # change the os (linux or darwin) and arch (amd64 or arm64) based on your machine
-curl -O https://github.com/kilianc/pretender/releases/download/v1.4.0/pretender_darwin_arm64.tar.gz
+curl -O https://github.com/kilianc/pretender/releases/download/v1.5.1/pretender_darwin_arm64.tar.gz
 tar -xzf pretender_darwin_arm64.tar.gz
 ./pretender --version
 ```
