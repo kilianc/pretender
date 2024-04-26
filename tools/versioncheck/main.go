@@ -14,6 +14,7 @@ func main() {
 	pattern := regexp.MustCompile(`v[0-9]\.[0-9]\.[0-9]`)
 	versionSet := map[string][]string{}
 	extensions := []string{".go", ".md"}
+	skipList := []string{"CHANGELOG.md"}
 
 	flag.Parse()
 	versionTag := strings.Replace(flag.Arg(0), "refs/tags/", "", 1)
@@ -34,6 +35,10 @@ func main() {
 		}
 
 		if !slices.Contains(extensions, filepath.Ext(path)) {
+			return nil
+		}
+
+		if slices.Contains(skipList, filepath.Base(path)) {
 			return nil
 		}
 
