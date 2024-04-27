@@ -1,4 +1,4 @@
-package pretender
+package handlers
 
 import (
 	"io/fs"

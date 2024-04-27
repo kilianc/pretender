@@ -28,8 +28,9 @@ bin/gotestsum:
 	GOBIN=$(PROJECT_DIR)/$(@D) go install gotest.tools/gotestsum@$(GOTESTSUM_VERSION)
 
 test: bin/gotestsum lint
-	@cd $(PROJECT_DIR) && $(PROJECT_DIR)/bin/gotestsum --format testdox -- -coverprofile=cover.out ./internal/...
+	@cd $(PROJECT_DIR) && $(PROJECT_DIR)/bin/gotestsum --format testdox -- -coverprofile=cover.out -coverpkg=./... $(shell go list ./... | grep -v /tools/ | grep -v /cmd/)
 	@cd $(PROJECT_DIR) && go tool cover -func=cover.out > coverage-text.txt
+	@cat coverage-text.txt
 
 cover: test
 	@cd $(PROJECT_DIR) && go tool cover -html=cover.out

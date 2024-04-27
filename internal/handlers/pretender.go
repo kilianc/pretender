@@ -1,4 +1,4 @@
-package pretender
+package handlers
 
 import (
 	"encoding/json"
@@ -21,7 +21,7 @@ type response struct {
 	count      int
 }
 
-type HTTPHandler struct {
+type Pretender struct {
 	sync.Mutex
 	index           int
 	responses       []response
@@ -41,19 +41,19 @@ var healthResponse = &response{
 	count:      1,
 }
 
-func NewHTTPHandler(logger *slog.Logger, healthCheckPath ...string) *HTTPHandler {
+func NewPretender(logger *slog.Logger, healthCheckPath ...string) *Pretender {
 	if len(healthCheckPath) == 0 || healthCheckPath[0] == "" {
 		healthCheckPath = []string{"/healthz"}
 	}
 
-	return &HTTPHandler{
+	return &Pretender{
 		logger:          logger,
 		fs:              osFileReader{},
 		healthCheckPath: healthCheckPath[0],
 	}
 }
 
-func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
+func (hh *Pretender) LoadResponsesFile(name string) (int, error) {
 	content, err := fs.ReadFile(hh.fs, name)
 	if err != nil {
 		return 0, fmt.Errorf("failed to read responses file [%s]: %w", name, err)
@@ -78,7 +78,7 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 			}
 
 			// if the body is a string, remove the quotes
-			if string(hh.responses[i].Body[0]) == `"` {
+			if len(hh.responses[i].Body) > 0 && string(hh.responses[i].Body[0]) == `"` {
 				hh.responses[i].Body = hh.responses[i].Body[1 : len(hh.responses[i].Body)-1]
 			}
 		}
@@ -94,7 +94,7 @@ func (hh *HTTPHandler) LoadResponsesFile(name string) (int, error) {
 	return len(hh.responses), nil
 }
 
-func (hh *HTTPHandler) getNextResponse(path string) (*response, error) {
+func (hh *Pretender) getNextResponse(path string) (*response, error) {
 	if path == hh.healthCheckPath {
 		return healthResponse, nil
 	}
@@ -113,7 +113,7 @@ func (hh *HTTPHandler) getNextResponse(path string) (*response, error) {
 	return response, nil
 }
 
-func (hh *HTTPHandler) HandleFunc(w http.ResponseWriter, rq *http.Request) {
+func (hh *Pretender) HandleFunc(w http.ResponseWriter, rq *http.Request) {
 	hh.Lock()
 	defer hh.Unlock()
 

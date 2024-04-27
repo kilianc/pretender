@@ -1,4 +1,4 @@
-package pretender
+package handlers
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 )
 
 func Test_HandleFunc(t *testing.T) {
-	hh := HTTPHandler{
+	hh := Pretender{
 		responses: []response{
 			{
 				StatusCode: http.StatusOK,
@@ -100,7 +100,7 @@ func Test_HandleFunc(t *testing.T) {
 }
 
 func Test_HandleFuncNegativeRepeat(t *testing.T) {
-	hh := HTTPHandler{
+	hh := Pretender{
 		responses: []response{
 			{
 				StatusCode: http.StatusOK,
@@ -183,7 +183,7 @@ func Test_LoadResponsesFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("%q", tt.path), func(t *testing.T) {
-			hh := HTTPHandler{
+			hh := Pretender{
 				logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 				fs:     mfs,
 			}
