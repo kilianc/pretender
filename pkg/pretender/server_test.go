@@ -14,7 +14,11 @@ var discardLogger = slog.New(slog.NewTextHandler(io.Discard, nil))
 
 func Test_NewHTTPMux(t *testing.T) {
 	responseFileName := fmt.Sprintf("%s/response.json", t.TempDir())
-	os.WriteFile(responseFileName, []byte(`[{"delay_ms":1}]`), 0o644)
+
+	err := os.WriteFile(responseFileName, []byte(`[{"delay_ms":1}]`), 0o644)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	t.Run("should error out when file fails to load", func(t *testing.T) {
 		server, rn, err := NewServeMux("no.json", discardLogger)
@@ -61,7 +65,11 @@ func Test_NewHTTPMux(t *testing.T) {
 
 func Test_NewServer(t *testing.T) {
 	responseFileName := fmt.Sprintf("%s/response.txt", t.TempDir())
-	os.WriteFile(responseFileName, []byte(`hi!\n`), 0o644)
+
+	err := os.WriteFile(responseFileName, []byte(`[{"delay_ms":1}]`), 0o644)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	t.Run("should error out when file fails to load", func(t *testing.T) {
 		server, _, err := NewServer(8080, "no.json", discardLogger)

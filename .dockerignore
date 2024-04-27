@@ -2,5 +2,6 @@
 !cmd
 !internal
 !pkg
+!.golangci.yml
 !go.*
 !Makefile
