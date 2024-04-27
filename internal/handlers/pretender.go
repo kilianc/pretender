@@ -135,14 +135,7 @@ func (hh *Pretender) HandleFunc(w http.ResponseWriter, rq *http.Request) {
 	}
 
 	w.WriteHeader(int(r.StatusCode))
-
-	_, err = fmt.Fprintf(w, "%s\n", r.Body)
-	if err != nil {
-		hh.logger.Error("responding", "error", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-
-		return
-	}
+	fmt.Fprintf(w, "%s\n", r.Body)
 
 	hh.logger.Info("responding",
 		"status_code", r.StatusCode,

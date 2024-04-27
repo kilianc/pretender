@@ -12,7 +12,7 @@ import (
 	"testing/fstest"
 )
 
-func Test_HandleFunc(t *testing.T) {
+func TestHandleFunc(t *testing.T) {
 	hh := Pretender{
 		responses: []response{
 			{
@@ -99,7 +99,7 @@ func Test_HandleFunc(t *testing.T) {
 	}
 }
 
-func Test_HandleFuncNegativeRepeat(t *testing.T) {
+func TestHandleFuncNegativeRepeat(t *testing.T) {
 	hh := Pretender{
 		responses: []response{
 			{
@@ -125,7 +125,7 @@ func Test_HandleFuncNegativeRepeat(t *testing.T) {
 	})
 }
 
-func Test_LoadResponsesFile(t *testing.T) {
+func TestLoadResponsesFile(t *testing.T) {
 	mfs := fstest.MapFS{
 		"some/path/valid.json": {Data: []byte(`[
 			{"body":"hello","headers":{"content-type":"text/plain"},"delay_ms":1000,"repeat":-1},
