@@ -97,19 +97,14 @@ func TestHandleFunc(t *testing.T) {
 			}
 		})
 	}
-}
 
-func TestHandleFuncNegativeRepeat(t *testing.T) {
-	hh := Pretender{
-		responses: []response{
-			{
-				StatusCode: http.StatusOK,
-				Body:       []byte("hello"),
-				Headers:    map[string]string{"content-type": "my/type1"},
-				Repeat:     -1,
-			},
+	hh.responses = []response{
+		{
+			StatusCode: http.StatusOK,
+			Body:       []byte("hello"),
+			Headers:    map[string]string{"content-type": "my/type1"},
+			Repeat:     -1,
 		},
-		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
 
 	t.Run("should repeat forever", func(t *testing.T) {
