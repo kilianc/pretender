@@ -98,6 +98,7 @@ func TestHandleFunc(t *testing.T) {
 		})
 	}
 
+	hh.index = 0
 	hh.responses = []response{
 		{
 			StatusCode: http.StatusOK,
@@ -172,8 +173,8 @@ func TestLoadResponsesFile(t *testing.T) {
 				{StatusCode: http.StatusOK, Body: []byte(""), Repeat: 1},
 			},
 		},
-		{"some/path/invalid.json", "failed to unmarshal responses", []response{}},
-		{"some/path/doesnt.exist", "failed to read responses file", []response{}},
+		{"some/path/invalid.json", "parsing responses", []response{}},
+		{"some/path/doesnt.exist", "reading responses file", []response{}},
 	}
 
 	for _, tt := range tests {
