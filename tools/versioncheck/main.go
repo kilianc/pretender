@@ -59,7 +59,7 @@ func main() {
 
 		content, err := os.ReadFile(path)
 		if err != nil {
-			return fmt.Errorf("failed to read file %q: %w", path, err)
+			return fmt.Errorf("read file %q: %w", path, err)
 		}
 
 		versions := pattern.FindAllString(string(content), -1)

@@ -10,7 +10,7 @@ import (
 )
 
 // ErrorLoadingResponsesFile is the error returned when the responses file can't be loaded.
-var ErrorLoadingResponsesFile = fmt.Errorf("responses file")
+var ErrorLoadingResponsesFile = fmt.Errorf("loading responses file")
 
 // NewHTTPHandler creates a new [http] handler function configured to serve the responses
 // defined in the responseFileName. It also returns the number of responses loaded from the file.
