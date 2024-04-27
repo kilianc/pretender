@@ -18,7 +18,7 @@ import (
 	"golang.org/x/term"
 )
 
-const version = "v1.5.1"
+const version = "v1.6.1"
 
 var isTTY = term.IsTerminal(int(os.Stdout.Fd()))
 

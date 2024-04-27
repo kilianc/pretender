@@ -1,4 +1,14 @@
 
+<a name="v1.6.1"></a>
+## [v1.6.1](https://github.com/kilianc/pretender/compare/v1.5.1...v1.6.1)
+
+> 2024-04-27
+
+### Feat
+
+* expose pretender as public pkg ([#59](https://github.com/kilianc/pretender/issues/59))
+
+
 <a name="v1.5.1"></a>
 ## [v1.5.1](https://github.com/kilianc/pretender/compare/v1.4.0...v1.5.1)
 
@@ -10,7 +20,7 @@
 
 ### Fix
 
-* handle server shutdown correctly
+* handle server shutdown correctly ([#58](https://github.com/kilianc/pretender/issues/58))
 
 
 <a name="v1.4.0"></a>
