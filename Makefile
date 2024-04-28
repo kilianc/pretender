@@ -94,6 +94,7 @@ changelog: bin/git-chglog
 
 .PHONY: version-check
 version-check:
+	@echo ""
 	@go run tools/versioncheck/main.go $(tag)
 
 .PHONY: cover-check
