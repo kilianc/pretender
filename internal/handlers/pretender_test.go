@@ -12,7 +12,7 @@ import (
 	"testing/fstest"
 )
 
-func Test_HandleFunc(t *testing.T) {
+func TestHandleFunc(t *testing.T) {
 	hh := Pretender{
 		responses: []response{
 			{
@@ -97,19 +97,15 @@ func Test_HandleFunc(t *testing.T) {
 			}
 		})
 	}
-}
 
-func Test_HandleFuncNegativeRepeat(t *testing.T) {
-	hh := Pretender{
-		responses: []response{
-			{
-				StatusCode: http.StatusOK,
-				Body:       []byte("hello"),
-				Headers:    map[string]string{"content-type": "my/type1"},
-				Repeat:     -1,
-			},
+	hh.index = 0
+	hh.responses = []response{
+		{
+			StatusCode: http.StatusOK,
+			Body:       []byte("hello"),
+			Headers:    map[string]string{"content-type": "my/type1"},
+			Repeat:     -1,
 		},
-		logger: slog.New(slog.NewTextHandler(io.Discard, nil)),
 	}
 
 	t.Run("should repeat forever", func(t *testing.T) {
@@ -125,7 +121,7 @@ func Test_HandleFuncNegativeRepeat(t *testing.T) {
 	})
 }
 
-func Test_LoadResponsesFile(t *testing.T) {
+func TestLoadResponsesFile(t *testing.T) {
 	mfs := fstest.MapFS{
 		"some/path/valid.json": {Data: []byte(`[
 			{"body":"hello","headers":{"content-type":"text/plain"},"delay_ms":1000,"repeat":-1},
@@ -177,8 +173,8 @@ func Test_LoadResponsesFile(t *testing.T) {
 				{StatusCode: http.StatusOK, Body: []byte(""), Repeat: 1},
 			},
 		},
-		{"some/path/invalid.json", "failed to unmarshal responses", []response{}},
-		{"some/path/doesnt.exist", "failed to read responses file", []response{}},
+		{"some/path/invalid.json", "parsing responses", []response{}},
+		{"some/path/doesnt.exist", "reading responses file", []response{}},
 	}
 
 	for _, tt := range tests {

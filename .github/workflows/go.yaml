@@ -35,12 +35,18 @@ jobs:
     - name: Test
       run: make test
 
+    - name: Create cover.txt
+      run: make cover.txt
+
     - name: Post Code Coverage Comment
       uses: actions/github-script@v6
       if: ${{ github.event_name == 'pull_request' }}
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: await require('${{ github.workspace }}/.github/update-code-coverage-comment.js')({ context, github })
+
+    - name: Cover Check
+      run: make cover-check
 
     - name: Version Check
       run: make version-check

@@ -12,7 +12,7 @@ import (
 
 var discardLogger = slog.New(slog.NewTextHandler(io.Discard, nil))
 
-func Test_NewHTTPMux(t *testing.T) {
+func TestNewHTTPMux(t *testing.T) {
 	responseFileName := fmt.Sprintf("%s/response.json", t.TempDir())
 
 	err := os.WriteFile(responseFileName, []byte(`[{"delay_ms":1}]`), 0o644)
@@ -63,7 +63,7 @@ func Test_NewHTTPMux(t *testing.T) {
 	})
 }
 
-func Test_NewServer(t *testing.T) {
+func TestNewServer(t *testing.T) {
 	responseFileName := fmt.Sprintf("%s/response.txt", t.TempDir())
 
 	err := os.WriteFile(responseFileName, []byte(`[{"delay_ms":1}]`), 0o644)
