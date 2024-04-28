@@ -90,7 +90,9 @@ docker-run: docker-build
 
 .PHONY: changelog
 changelog: bin/git-chglog
-	@bin/git-chglog -o CHANGELOG.md --next-tag $(tag)
+	@git tag -l | xargs git tag -d > /dev/null 2>&1
+	@git fetch --tags > /dev/null 2>&1
+	@bin/git-chglog --no-emoji -o CHANGELOG.md --next-tag $(tag)
 
 .PHONY: version-check
 version-check:
