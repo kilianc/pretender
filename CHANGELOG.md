@@ -1,14 +1,5 @@
 
 
-<a name="v1.6.2"></a>
-## [v1.6.2](https://github.com/kilianc/pretender/compare/v1.6.1...v1.6.2) <kbd>2024/04/27</kbd>
-
-
-✨ add the `—no-color` flag ([#64](https://github.com/kilianc/pretender/issues/64))<br>
-
-🧹 use better names for gha workflows<br>🧹 add `commit-check` make target ([#65](https://github.com/kilianc/pretender/issues/65))<br>🧹 add missing changelog files ([#63](https://github.com/kilianc/pretender/issues/63))<br>🧹 improve tests for nil values ([#62](https://github.com/kilianc/pretender/issues/62))<br>🧹 remove unnecessary error handling ([#61](https://github.com/kilianc/pretender/issues/61))<br>
-
-
 <a name="v1.6.1"></a>
 ## [v1.6.1](https://github.com/kilianc/pretender/compare/v1.5.1...v1.6.1) <kbd>2024/04/27</kbd>
 
