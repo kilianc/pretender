@@ -25,14 +25,12 @@ func main() {
 		}
 	}
 
-	fmt.Println("")
-
 	{
-		fmt.Printf(" \033[38;5;245m• checking CHANGELOG.md\033[0m\n")
+		fmt.Fprintf(os.Stderr, " \033[38;5;245m• checking CHANGELOG.md\033[0m\n")
 
 		content, err := os.ReadFile("CHANGELOG.md")
 		if err != nil {
-			fmt.Printf("failed to read file \"CHANGELOG.md\": %v", err)
+			fmt.Fprintf(os.Stderr, "failed to read file \"CHANGELOG.md\": %v", err)
 			os.Exit(1)
 		}
 
@@ -65,9 +63,9 @@ func main() {
 		versions := pattern.FindAllString(string(content), -1)
 
 		if len(versions) == 0 {
-			fmt.Printf(" \033[38;5;245m• checking %s\033[0m\n", path)
+			fmt.Fprintf(os.Stderr, " \033[38;5;245m• checking %s\033[0m\n", path)
 		} else {
-			fmt.Printf(" \033[1;93m•\033[0m checking %q %q\033[0m\n", path, versions)
+			fmt.Fprintf(os.Stderr, " \033[1;93m•\033[0m checking %q %q\033[0m\n", path, versions)
 		}
 
 		for _, version := range versions {
@@ -89,14 +87,14 @@ func main() {
 		fmt.Println("\033[91m✘ error: multiple versions found:\033[0m")
 
 		for version, path := range versionSet {
-			fmt.Printf("\033[38;5;210m  %q: %q\033[0m\n", version, path)
+			fmt.Fprintf(os.Stderr, "\033[38;5;210m  %q: %q\033[0m\n", version, path)
 		}
 
 		fmt.Println("")
 		os.Exit(1)
 	}
 
-	fmt.Printf("\033[92m✔ All files have the same version: %q\033[0m\n", versions[0])
+	fmt.Fprintf(os.Stderr, "\033[92m✔ All files have the same version: %q\033[0m\n", versions[0])
 }
 
 func keys(m map[string][]string) []string {
