@@ -23,6 +23,10 @@ func TestHandleFunc(t *testing.T) {
 			},
 			{
 				StatusCode: http.StatusOK,
+				Repeat:     1,
+			},
+			{
+				StatusCode: http.StatusOK,
 				Body:       []byte("world"),
 				Headers:    map[string]string{"content-type": "my/type2"},
 				Repeat:     1,
@@ -48,6 +52,11 @@ func TestHandleFunc(t *testing.T) {
 			statusCode:  http.StatusOK,
 			body:        "hello\n",
 			contentType: "my/type1",
+		},
+		{
+			path:       "/",
+			statusCode: http.StatusOK,
+			body:       "\n",
 		},
 		{
 			path:        "/",
@@ -126,9 +135,10 @@ func TestLoadResponsesFile(t *testing.T) {
 		"some/path/valid.json": {Data: []byte(`[
 			{"body":"hello","headers":{"content-type":"text/plain"},"delay_ms":1000,"repeat":-1},
 			{"status_code":404,"body":"world","headers":{"content-type":"text/plain"},"repeat":0},
-			{"status_code":404,"body":{"hello":"world"},"headers":{"content-type":"application/json"},"repeat":5}
+			{"status_code":404,"body":{"hello":"world"},"headers":{"content-type":"application/json"},"repeat":5},
+			{}
 		]`)},
-		"some/path/plain.text":   {Data: []byte("hello\nworld\n")},
+		"some/path/plain.text":   {Data: []byte("hello\n\nworld\n")},
 		"some/path/invalid.json": {Data: []byte("invalid json")},
 	}
 
@@ -162,6 +172,13 @@ func TestLoadResponsesFile(t *testing.T) {
 					DelayMs:    0,
 					Repeat:     5,
 				},
+				{
+					StatusCode: http.StatusOK,
+					Body:       nil,
+					Headers:    nil,
+					DelayMs:    0,
+					Repeat:     1,
+				},
 			},
 		},
 		{
@@ -169,6 +186,7 @@ func TestLoadResponsesFile(t *testing.T) {
 			"",
 			[]response{
 				{StatusCode: http.StatusOK, Body: []byte("hello"), Repeat: 1},
+				{StatusCode: http.StatusOK, Body: []byte(""), Repeat: 1},
 				{StatusCode: http.StatusOK, Body: []byte("world"), Repeat: 1},
 				{StatusCode: http.StatusOK, Body: []byte(""), Repeat: 1},
 			},
@@ -197,8 +215,10 @@ func TestLoadResponsesFile(t *testing.T) {
 			}
 
 			// check if responses in the file are equal to expected
-			if err == nil && !reflect.DeepEqual(hh.responses, tt.expected) {
-				t.Errorf("got \"%v\", expect \"%v\"", hh.responses, tt.expected)
+			for i := range hh.responses {
+				if !reflect.DeepEqual(hh.responses[i], tt.expected[i]) {
+					t.Errorf("\nresponses[%d]:\n\tgot    \"%v\"\n\texpect \"%v\"", i, hh.responses[i], tt.expected[i])
+				}
 			}
 		})
 	}
