@@ -50,3 +50,6 @@ jobs:
 
     - name: Version Check
       run: make version-check
+
+    - name: Commit Check
+      run: make commit-check message='${{ github.event.pull_request.title }}'
