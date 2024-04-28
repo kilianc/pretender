@@ -17,7 +17,7 @@
 
 🐛 handle server shutdown correctly ([#58](https://github.com/kilianc/pretender/issues/58))<br>
 
-🧹 add changelog ([#57](https://github.com/kilianc/pretender/issues/57))<br>🧹 check for version mismatch on release ([#56](https://github.com/kilianc/pretender/issues/56))<br>🧹 fix curl install instructions ([#55](https://github.com/kilianc/pretender/issues/55))<br>🧹 minor nit in README ([#53](https://github.com/kilianc/pretender/issues/53))<br>🧹 bump to v1.4.0 ([#52](https://github.com/kilianc/pretender/issues/52))<br>
+🧹 add changelog ([#57](https://github.com/kilianc/pretender/issues/57))<br>🧹 check for version mismatch on release ([#56](https://github.com/kilianc/pretender/issues/56))<br>🧹 fix curl install instructions ([#55](https://github.com/kilianc/pretender/issues/55))<br>🧹 minor nit in README ([#53](https://github.com/kilianc/pretender/issues/53))<br>
 
 
 <a name="v1.4.0"></a>
@@ -26,7 +26,7 @@
 
 ✨ add healthcheck ([#50](https://github.com/kilianc/pretender/issues/50))<br>
 
-🧹 fix example.json ([#51](https://github.com/kilianc/pretender/issues/51))<br>🧹 use verbatim license text to pass `licensecheck` ([#49](https://github.com/kilianc/pretender/issues/49))<br>🧹 add MIT license file ([#48](https://github.com/kilianc/pretender/issues/48))<br>
+🧹 bump to v1.4.0 ([#52](https://github.com/kilianc/pretender/issues/52))<br>🧹 fix example.json ([#51](https://github.com/kilianc/pretender/issues/51))<br>🧹 use verbatim license text to pass `licensecheck` ([#49](https://github.com/kilianc/pretender/issues/49))<br>🧹 add MIT license file ([#48](https://github.com/kilianc/pretender/issues/48))<br>
 
 
 <a name="v1.3.0"></a>
