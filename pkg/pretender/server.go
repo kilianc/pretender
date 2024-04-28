@@ -1,7 +1,6 @@
 package pretender
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -27,7 +26,7 @@ func NewHTTPHandler(
 
 	rn, err := hh.LoadResponsesFile(responseFileName)
 	if err != nil {
-		return nil, 0, errors.Join(ErrorLoadingResponsesFile, err)
+		return nil, 0, fmt.Errorf("%w: %w", ErrorLoadingResponsesFile, err)
 	}
 
 	return hh.HandleFunc, rn, nil
