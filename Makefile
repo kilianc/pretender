@@ -6,8 +6,8 @@ RESPONSES_FILE ?= examples/example.json
 BINARY_NAME := pretender
 OS_LIST := darwin linux
 ARCH_LIST := arm64 amd64
-BUILD_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BINARY_NAME)_$(os)_$(arch)))
-RELEASE_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BINARY_NAME)_$(os)_$(arch).tar.gz))
+BUILD_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BINARY_NAME)-$(os)-$(arch)))
+RELEASE_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BINARY_NAME)-$(os)-$(arch).tar.gz))
 
 # - install binary dependencies
 
@@ -63,8 +63,8 @@ build: $(BUILD_TARGETS)
 
 .PHONY: $(BUILD_TARGETS)
 $(BUILD_TARGETS):
-	@$(eval os = $(word 2, $(subst _, ,$@)))
-	@$(eval arch = $(word 3, $(subst _, ,$@)))
+	@$(eval os = $(word 2, $(subst -, ,$@)))
+	@$(eval arch = $(word 3, $(subst -, ,$@)))
 	GOOS=$(os) GOARCH=$(arch) CGO_ENABLED=0 go build -ldflags "-s -w" -o $@ cmd/$(BINARY_NAME)/main.go
 
 .PHONY: release
