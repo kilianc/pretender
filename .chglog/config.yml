@@ -9,6 +9,18 @@ options:
       Type:
         - feat
         - fix
+        - chore
+  commit_groups:
+    group_by: Type
+    sort_by: Title
+    title_order:
+      - fix
+      - feat
+      - chore
+    title_maps:
+      feat: ✨
+      fix: 🐛
+      chore: 🧹
   header:
     pattern: "^(\\w*)\\:\\s(.*)$"
     pattern_maps:
