@@ -42,5 +42,8 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: await require('${{ github.workspace }}/.github/update-code-coverage-comment.js')({ context, github })
 
+    - name: Cover Check
+      run: make cover-check
+
     - name: Version Check
       run: make version-check
