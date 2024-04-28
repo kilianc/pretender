@@ -102,6 +102,11 @@ cover-check: cover.txt
 	@cat cover.txt
 	@go run tools/covercheck/main.go
 
+.PHONY: commit-check
+commit-check:
+	@echo ""
+	@go run tools/commitcheck/main.go '$(message)'
+
 # - clean
 
 .PHONY: clean
