@@ -146,4 +146,4 @@ make docker-run
 
 ## License
 
-MIT License, see [LICENSE](https://github.com/friendsofgo/killgrave/blob/main/LICENSE)
+MIT License, see [LICENSE](https://github.com/kilianc/pretender/blob/main/LICENSE.md)
