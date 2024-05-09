@@ -1,5 +1,14 @@
 
 
+<a name="v1.7.0"></a>
+## [v1.7.0](https://github.com/kilianc/pretender/compare/v1.6.1...v1.7.0) <kbd>2024/04/28</kbd>
+
+
+✨ add the `—no-color` flag ([#64](https://github.com/kilianc/pretender/issues/64))<br>
+
+🧹 fix license typos ([#73](https://github.com/kilianc/pretender/issues/73))<br>🧹 suppress git output from `make changelog` ([#70](https://github.com/kilianc/pretender/issues/70))<br>🧹 rearrange code for readibility ([#71](https://github.com/kilianc/pretender/issues/71))<br>🧹 sync git tags before generating the changelog ([#69](https://github.com/kilianc/pretender/issues/69))<br>🧹 beautify the changelog ([#68](https://github.com/kilianc/pretender/issues/68))<br>🧹 use stderr for version checker ([#66](https://github.com/kilianc/pretender/issues/66))<br>🧹 use better names for gha workflows ([#67](https://github.com/kilianc/pretender/issues/67))<br>🧹 add `commit-check` make target ([#65](https://github.com/kilianc/pretender/issues/65))<br>🧹 add missing changelog files ([#63](https://github.com/kilianc/pretender/issues/63))<br>🧹 improve tests for nil values ([#62](https://github.com/kilianc/pretender/issues/62))<br>🧹 remove unnecessary error handling ([#61](https://github.com/kilianc/pretender/issues/61))<br>
+
+
 <a name="v1.6.1"></a>
 ## [v1.6.1](https://github.com/kilianc/pretender/compare/v1.5.1...v1.6.1) <kbd>2024/04/27</kbd>
 
