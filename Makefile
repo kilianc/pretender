@@ -52,6 +52,9 @@ cover.out:
 cover.txt: cover.out
 	@cd $(PROJECT_DIR) && go tool cover -func=cover.out -o cover.txt
 
+cover.html: cover.out
+	@cd $(PROJECT_DIR) && go tool cover -html=cover.out -o cover.html
+
 .PHONY: open-cover
 open-cover: cover.out
 	@cd $(PROJECT_DIR) && go tool cover -html=cover.out

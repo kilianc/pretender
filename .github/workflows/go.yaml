@@ -16,8 +16,8 @@ jobs:
   build:
     name: Build and Test
     permissions:
-      issues: write
       pull-requests: write
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -36,15 +36,13 @@ jobs:
     - name: Test
       run: make test
 
-    - name: Create cover.txt
-      run: make cover.txt
+    - name: Create cover files
+      run: |
+        make cover.txt
+        make cover.html
 
-    - name: Post Code Coverage Comment
-      uses: actions/github-script@v6
-      if: ${{ github.event_name == 'pull_request' }}
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: await require('${{ github.workspace }}/.github/update-code-coverage-comment.js')({ context, github })
+    - name: Go Beautiful HTML Coverage
+      uses: kilianc/go-beautiful-html-coverage@main
 
     - name: Cover Check
       run: make cover-check
