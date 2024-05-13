@@ -42,7 +42,7 @@ jobs:
         make cover.html
 
     - name: Go Beautiful HTML Coverage
-      uses: kilianc/go-beautiful-html-coverage@main
+      uses: gha-common/go-beautiful-html-coverage@main
 
     - name: Cover Check
       run: make cover-check
