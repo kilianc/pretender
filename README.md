@@ -52,10 +52,15 @@ docker run --rm -it \
 With `curl`
 
 ```sh
-# change the os (linux or darwin) and arch (amd64 or arm64) based on your machine
-curl -O https://github.com/kilianc/pretender/releases/download/v1.7.0/pretender-darwin-arm64.tar.gz
-tar -xzf pretender-darwin-arm64.tar.gz
-./pretender --version
+export CURRENT_OS=$(uname -s | tr A-Z a-z)
+export CURRENT_ARCH=$(uname -m | tr A-Z a-z | sed s/x86_64/amd64/)
+export TARGZ_NAME="pretender-${CURRENT_OS}-${CURRENT_ARCH}.tar.gz"
+export TARGZ_URL="https://github.com/kilianc/pretender/releases/download/v1.7.0/${TARGZ_NAME}"
+
+curl -sOL ${TARGZ_URL}
+tar -xzf ${TARGZ_NAME}
+
+echo "successfully downloaded pretender $(./pretender --version)"
 ```
 
 ### Usage
