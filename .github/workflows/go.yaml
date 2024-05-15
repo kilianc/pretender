@@ -44,7 +44,6 @@ jobs:
     - name: Go Beautiful HTML Coverage
       uses: gha-common/go-beautiful-html-coverage@incremental2
       with:
-        branch: cover-test
         threshold: 100
 
     - name: Cover Check
