@@ -42,7 +42,7 @@ jobs:
         make cover.html
 
     - name: Go Beautiful HTML Coverage
-      uses: gha-common/go-beautiful-html-coverage@main
+      uses: gha-common/go-beautiful-html-coverage@ui
       with:
         threshold: 100
 
