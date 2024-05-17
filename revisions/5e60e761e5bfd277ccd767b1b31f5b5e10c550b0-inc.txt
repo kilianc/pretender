@@ -1,9 +1,1 @@
-github.com/kilianc/pretender/internal/handlers/osfilereader.go:12:	ReadFile		100.0%
-github.com/kilianc/pretender/internal/handlers/pretender.go:44:		NewPretender		100.0%
-github.com/kilianc/pretender/internal/handlers/pretender.go:56:		HandleFunc		100.0%
-github.com/kilianc/pretender/internal/handlers/pretender.go:89:		getNextResponse		100.0%
-github.com/kilianc/pretender/internal/handlers/pretender.go:108:	LoadResponsesFile	100.0%
-github.com/kilianc/pretender/pkg/pretender/server.go:20:		NewHTTPHandler		100.0%
-github.com/kilianc/pretender/pkg/pretender/server.go:41:		NewServeMux		100.0%
-github.com/kilianc/pretender/pkg/pretender/server.go:63:		NewServer		100.0%
-total:									(statements)		100.0%
+total:	(statements)	0.0%

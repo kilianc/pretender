@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>handlers: Go Coverage Report</title>
+		<title>Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,266 +55,26 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/kilianc/pretender/internal/handlers/osfilereader.go (100.0%)</option>
-				
-				<option value="file1">github.com/kilianc/pretender/internal/handlers/pretender.go (100.0%)</option>
-				
-				<option value="file2">github.com/kilianc/pretender/pkg/pretender/server.go (100.0%)</option>
-				
 				</select>
 			</div>
 			<div id="legend">
 				<span>not tracked</span>
 			
-				<span class="cov0">not covered</span>
-				<span class="cov8">covered</span>
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
 			
 			</div>
 		</div>
 		<div id="content">
-		
-		<pre class="file" id="file0" style="display: none">package handlers
-
-import (
-        "io/fs"
-        "os"
-)
-
-type osFileReader struct {
-        fs.FS
-}
-
-func (fr osFileReader) ReadFile(name string) ([]byte, error) <span class="cov8" title="1">{
-        //nolint
-        return os.ReadFile(name)
-}</span>
-</pre>
-		
-		<pre class="file" id="file1" style="display: none">package handlers
-
-import (
-        "encoding/json"
-        "errors"
-        "fmt"
-        "io/fs"
-        "log/slog"
-        "net/http"
-        "strings"
-        "sync"
-        "time"
-)
-
-type Pretender struct {
-        sync.Mutex
-        index           int
-        responses       []response
-        fs              fs.FS
-        logger          *slog.Logger
-        healthCheckPath string
-}
-
-type response struct {
-        StatusCode uint              `json:"status_code"`
-        Body       json.RawMessage   `json:"body"`
-        Headers    map[string]string `json:"headers"`
-        DelayMs    uint              `json:"delay_ms"`
-        Repeat     int               `json:"repeat"`
-        count      int
-}
-
-var healthResponse = &amp;response{
-        StatusCode: 200,
-        Body:       []byte("ok"),
-        Headers:    map[string]string{},
-        DelayMs:    0,
-        Repeat:     1,
-        count:      1,
-}
-
-var errNoResponsesLeft = errors.New("no responses left")
-
-func NewPretender(logger *slog.Logger, healthCheckPath ...string) *Pretender <span class="cov8" title="1">{
-        if len(healthCheckPath) == 0 || healthCheckPath[0] == "" </span><span class="cov8" title="1">{
-                healthCheckPath = []string{"/healthz"}
-        }</span>
-
-        <span class="cov8" title="1">return &amp;Pretender{
-                logger:          logger,
-                fs:              osFileReader{},
-                healthCheckPath: healthCheckPath[0],
-        }</span>
-}
-
-func (hh *Pretender) HandleFunc(w http.ResponseWriter, rq *http.Request) <span class="cov8" title="1">{
-        hh.Lock()
-        defer hh.Unlock()
-
-        r, err := hh.getNextResponse(rq.URL.Path)
-        if err != nil </span><span class="cov8" title="1">{
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                hh.logger.Error("responding", "error", err)
-
-                return
-        }</span>
-
-        <span class="cov8" title="1">delay := time.Duration(r.DelayMs) * time.Millisecond
-        if r.DelayMs &gt; 0 </span><span class="cov8" title="1">{
-                time.Sleep(delay)
-        }</span>
-
-        <span class="cov8" title="1">for k, v := range r.Headers </span><span class="cov8" title="1">{
-                w.Header().Set(k, v)
-        }</span>
-
-        <span class="cov8" title="1">w.WriteHeader(int(r.StatusCode))
-        fmt.Fprintf(w, "%s\n", r.Body)
-
-        hh.logger.Info("responding",
-                "status_code", r.StatusCode,
-                "body", string(r.Body),
-                "headers", r.Headers,
-                "delay", delay,
-                "repeat", strings.Replace(fmt.Sprintf("%d/%d", r.count, r.Repeat), "-1", "∞", -1),
-        )</span>
-}
-
-func (hh *Pretender) getNextResponse(path string) (*response, error) <span class="cov8" title="1">{
-        if path == hh.healthCheckPath </span><span class="cov8" title="1">{
-                return healthResponse, nil
-        }</span>
-
-        <span class="cov8" title="1">if hh.index &gt;= len(hh.responses) </span><span class="cov8" title="1">{
-                return &amp;response{}, errNoResponsesLeft
-        }</span>
-
-        <span class="cov8" title="1">response := &amp;hh.responses[hh.index]
-        response.count++
-
-        if response.Repeat == response.count </span><span class="cov8" title="1">{
-                hh.index++
-        }</span>
-
-        <span class="cov8" title="1">return response, nil</span>
-}
-
-func (hh *Pretender) LoadResponsesFile(name string) (int, error) <span class="cov8" title="1">{
-        content, err := fs.ReadFile(hh.fs, name)
-        if err != nil </span><span class="cov8" title="1">{
-                return 0, fmt.Errorf("reading responses file [%s]: %w", name, err)
-        }</span>
-
-        //nolint:nestif
-        <span class="cov8" title="1">if strings.HasSuffix(name, ".json") </span><span class="cov8" title="1">{
-                hh.responses = []response{}
-
-                err = json.Unmarshal(content, &amp;hh.responses)
-                if err != nil </span><span class="cov8" title="1">{
-                        return 0, fmt.Errorf("parsing responses: %w", err)
-                }</span>
-
-                <span class="cov8" title="1">for i := range hh.responses </span><span class="cov8" title="1">{
-                        if hh.responses[i].StatusCode == 0 </span><span class="cov8" title="1">{
-                                hh.responses[i].StatusCode = 200
-                        }</span>
-
-                        <span class="cov8" title="1">if hh.responses[i].Repeat == 0 </span><span class="cov8" title="1">{
-                                hh.responses[i].Repeat = 1
-                        }</span>
-
-                        // if the body is a string, remove the quotes
-                        <span class="cov8" title="1">if len(hh.responses[i].Body) &gt; 0 &amp;&amp; string(hh.responses[i].Body[0]) == `"` </span><span class="cov8" title="1">{
-                                hh.responses[i].Body = hh.responses[i].Body[1 : len(hh.responses[i].Body)-1]
-                        }</span>
-                }
-        } else<span class="cov8" title="1"> {
-                lines := strings.Split(string(content), "\n")
-                hh.responses = make([]response, len(lines))
-
-                for i, line := range lines </span><span class="cov8" title="1">{
-                        hh.responses[i] = response{StatusCode: 200, Body: []byte(line), Repeat: 1}
-                }</span>
-        }
-
-        <span class="cov8" title="1">return len(hh.responses), nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file2" style="display: none">package pretender
-
-import (
-        "fmt"
-        "log/slog"
-        "net/http"
-
-        "github.com/kilianc/pretender/internal/handlers"
-)
-
-// ErrorLoadingResponsesFile is the error returned when the responses file can't be loaded.
-var ErrorLoadingResponsesFile = fmt.Errorf("loading responses file")
-
-// NewHTTPHandler creates a new [http] handler function configured to serve the responses
-// defined in the responseFileName. It also returns the number of responses loaded from the file.
-// If the file can't be loaded, it returns an error.
-// The healthCheckPath is an optional parameter to define a custom path for the health check endpoint.
-// If not provided, the default path is "/healthz".
-// The logger is used to log the requests and responses.
-func NewHTTPHandler(
-        responseFileName string,
-        logger *slog.Logger,
-        healthCheckPath ...string,
-) (func(http.ResponseWriter, *http.Request), int, error) <span class="cov8" title="1">{
-        hh := handlers.NewPretender(logger, healthCheckPath...)
-
-        rn, err := hh.LoadResponsesFile(responseFileName)
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, 0, fmt.Errorf("%w: %w", ErrorLoadingResponsesFile, err)
-        }</span>
-
-        <span class="cov8" title="1">return hh.HandleFunc, rn, nil</span>
-}
-
-// NewServeMux creates a new [http.NewServeMux] configured to serve the responses defined in the
-// responseFileName. It also returns the number of responses loaded from the file.
-// If the file can't be loaded, it returns an error.
-// The healthCheckPath is an optional parameter to define a custom path for the health check endpoint.
-// If not provided, the default path is "/healthz".
-// The logger is used to log the requests and responses.
-func NewServeMux(
-        responseFileName string,
-        logger *slog.Logger,
-        healthCheckPath ...string,
-) (*http.ServeMux, int, error) <span class="cov8" title="1">{
-        handler, rn, err := NewHTTPHandler(responseFileName, logger, healthCheckPath...)
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, 0, err
-        }</span>
-
-        <span class="cov8" title="1">mux := http.NewServeMux()
-        mux.HandleFunc("/", handler)
-
-        return mux, rn, nil</span>
-}
-
-// NewServer creates a new [http.Server] with the given port configured to serve the responses
-// defined in the responseFileName. It also returns the number of responses loaded from the file.
-// If the file can't be loaded, it returns an error.
-// The healthCheckPath is an optional parameter to define a custom path for the health check endpoint.
-// If not provided, the default path is "/healthz".
-// The logger is used to log the requests and responses.
-func NewServer(
-        port int,
-        responseFileName string,
-        logger *slog.Logger,
-        healthCheckPath ...string,
-) (*http.Server, int, error) <span class="cov8" title="1">{
-        mux, rn, err := NewServeMux(responseFileName, logger, healthCheckPath...)
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, 0, err
-        }</span>
-
-        <span class="cov8" title="1">return &amp;http.Server{Addr: fmt.Sprintf(":%d", port), Handler: mux}, rn, nil</span>
-}
-</pre>
 		
 		</div>
 	</body>
