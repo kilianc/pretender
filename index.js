@@ -114,8 +114,15 @@ function configureFileSelect() {
 
     document.location.hash = e.target.value
     document.querySelectorAll('.file').forEach((el) => (el.style.display = 'none'))
-    window.scrollTo(0, 0)
-    window.requestAnimationFrame(() => (document.getElementById(e.target.value).style.display = 'block'))
+    el.style.display = 'block'
+
+    let scrollUp = (times) => {
+      if (window.scrollY === 0 && times > 3) return
+      window.scrollTo(0, 0)
+      window.requestAnimationFrame(() => scrollUp(times + 1))
+    }
+
+    scrollUp(1)
   })
 
   files.value = selected
@@ -237,7 +244,6 @@ function addLineNumbers() {
         continue
       }
 
-      console.log({spansInLine})
       let classes = new Set(spansInLine.map((el) => el.classList[1]))
       let className = classes.size > 1 ? 'cov-mixed' : classes.values().next().value || ''
 
