@@ -27,11 +27,13 @@ function main() {
     return
   }
 
-  // layout
+  // setup the layout
+  configureLegend()
   configureFileSelect()
   addIncrementalButton()
   addThemeButton()
 
+  // setup the content
   configureCodeBlocks()
   configureSyntaxHighlight('pre .code .editor')
   addCoverageSpans('pre .coverage .editor')
@@ -39,6 +41,19 @@ function main() {
 
   // setup complete, restore the page visibility
   document.documentElement.style.setProperty('opacity', '1')
+}
+
+function configureLegend() {
+  let spans = document.querySelectorAll('#legend span')
+  for (let i = 0; i < spans.length; i++) {
+    if (spans[i].classList.length === 0) continue
+
+    if (spans[i].classList[0] === 'cov0') {
+      spans[i].classList.add('cov-uncovered')
+    } else {
+      spans[i].classList.add('cov-covered')
+    }
+  }
 }
 
 function addCoverageSpans(cssSelector) {
@@ -113,16 +128,11 @@ function configureFileSelect() {
     }
 
     document.location.hash = e.target.value
+
+    document.body.scrollTop = 0;
+
     document.querySelectorAll('.file').forEach((el) => (el.style.display = 'none'))
     el.style.display = 'block'
-
-    let scrollUp = (times) => {
-      if (window.scrollY === 0 && times > 3) return
-      window.scrollTo(0, 0)
-      window.requestAnimationFrame(() => scrollUp(times + 1))
-    }
-
-    scrollUp(1)
   })
 
   files.value = selected
