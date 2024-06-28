@@ -1,0 +1,4 @@
+github.com/kilianc/pretender/pkg/pretender/server.go:20:	NewHTTPHandler	0.0%
+github.com/kilianc/pretender/pkg/pretender/server.go:41:	NewServeMux	0.0%
+github.com/kilianc/pretender/pkg/pretender/server.go:63:	NewServer	100.0%
+total:								(statements)	100.0%
