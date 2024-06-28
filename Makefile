@@ -73,7 +73,6 @@ $(BUILD_TARGETS):
 .PHONY: release
 release: VERSION = $(shell go run cmd/$(BINARY_NAME)/main.go --responses $(RESPONSES_FILE) --version)
 release: $(RELEASE_TARGETS)
-	GOPROXY=proxy.golang.org go list -m github.com/kilianc/$(BINARY_NAME)@$(VERSION)
 
 .PHONY: $(RELEASE_TARGETS)
 $(RELEASE_TARGETS): clean build
