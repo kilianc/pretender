@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="Expires" content="0" />
+		<title>pretender: Go Coverage Report</title>
+		<script src="../index.js?ad79d67a7b27030a910cdcdaaaf1e441"></script>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/kilianc/pretender/pkg/pretender/server.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package pretender
+
+import (
+        "fmt"
+        "log/slog"
+        "net/http"
+
+        "github.com/kilianc/pretender/internal/handlers"
+)
+
+// ErrorLoadingResponsesFile is the error returned when the responses file can't be loaded.
+var ErrorLoadingResponsesFile = fmt.Errorf("loading responses file")
+
+// NewHTTPHandler creates a new [http] handler function configured to serve the responses
+// defined in the responseFileName. It also returns the number of responses loaded from the file.
+// If the file can't be loaded, it returns an error.
+// The healthCheckPath is an optional parameter to define a custom path for the health check endpoint.
+// If not provided, the default path is "/healthz".
+// The logger is used to log the requests and responses.
+func NewHTTPHandler(
+        responseFileName string,
+        logger *slog.Logger,
+        healthCheckPath ...string,
+) (func(http.ResponseWriter, *http.Request), int, error) {
+        hh := handlers.NewPretender(logger, healthCheckPath...)
+
+        rn, err := hh.LoadResponsesFile(responseFileName)
+        if err != nil {
+                return nil, 0, fmt.Errorf("%w: %w", ErrorLoadingResponsesFile, err)
+        }
+
+        return hh.HandleFunc, rn, nil
+}
+
+// NewServeMux creates a new [http.NewServeMux] configured to serve the responses defined in the
+// responseFileName. It also returns the number of responses loaded from the file.
+// If the file can't be loaded, it returns an error.
+// The healthCheckPath is an optional parameter to define a custom path for the health check endpoint.
+// If not provided, the default path is "/healthz".
+// The logger is used to log the requests and responses.
+func NewServeMux(
+        responseFileName string,
+        logger *slog.Logger,
+        healthCheckPath ...string,
+) (*http.ServeMux, int, error) {
+        handler, rn, err := NewHTTPHandler(responseFileName, logger, healthCheckPath...)
+        if err != nil {
+                return nil, 0, err
+        }
+
+        mux := http.NewServeMux()
+        mux.HandleFunc("/", handler)
+
+        return mux, rn, nil
+}
+
+// NewServer creates a new [http.Server] with the given port configured to serve the responses
+// defined in the responseFileName. It also returns the number of responses loaded from the file.
+// If the file can't be loaded, it returns an error.
+// The healthCheckPath is an optional parameter to define a custom path for the health check endpoint.
+// If not provided, the default path is "/healthz".
+// The logger is used to log the requests and responses.
+func NewServer(
+        host string,
+        port int,
+        responseFileName string,
+        logger *slog.Logger,
+        healthCheckPath ...string,
+) (*http.Server, int, error) <span class="cov8" title="1">{
+        mux, rn, err := NewServeMux(responseFileName, logger, healthCheckPath...)
+        if err != nil </span><span class="cov8" title="1">{
+                return nil, 0, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;http.Server{Addr: fmt.Sprintf("%s:%d", host, port), Handler: mux}, rn, nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+</html>
