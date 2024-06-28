@@ -61,6 +61,7 @@ func NewServeMux(
 // If not provided, the default path is "/healthz".
 // The logger is used to log the requests and responses.
 func NewServer(
+	host string,
 	port int,
 	responseFileName string,
 	logger *slog.Logger,
@@ -71,5 +72,5 @@ func NewServer(
 		return nil, 0, err
 	}
 
-	return &http.Server{Addr: fmt.Sprintf("%d", port), Handler: mux}, rn, nil
+	return &http.Server{Addr: fmt.Sprintf("%s:%d", host, port), Handler: mux}, rn, nil
 }
