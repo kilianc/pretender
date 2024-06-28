@@ -1,0 +1,7 @@
+mode: set
+github.com/kilianc/pretender/pkg/pretender/server.go:69.30,71.16 2 0
+github.com/kilianc/pretender/pkg/pretender/server.go:71.16,73.3 1 0
+github.com/kilianc/pretender/pkg/pretender/server.go:75.2,75.84 1 0
+github.com/kilianc/pretender/pkg/pretender/server.go:69.30,71.16 2 1
+github.com/kilianc/pretender/pkg/pretender/server.go:71.16,73.3 1 1
+github.com/kilianc/pretender/pkg/pretender/server.go:75.2,75.84 1 1
