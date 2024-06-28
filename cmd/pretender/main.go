@@ -24,6 +24,7 @@ var (
 	isTTY            = term.IsTerminal(int(os.Stdout.Fd()))
 	printVersion     = flag.Bool("version", false, "print version and exit")
 	responseFileName = flag.String("responses", "responses.json", "path to the file with responses")
+	host             = flag.String("host", "127.0.0.1", "host to bind the server to")
 	port             = flag.Int("port", 8080, "port to listen")
 	noColor          = flag.Bool("no-color", false, "disable color output")
 )
@@ -44,7 +45,7 @@ func main() {
 	p("██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║")
 	p("╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ %s", version)
 	p("")
-	p("\033[32m•\033[0m starting server on port %d", *port)
+	p("\033[32m•\033[0m starting server on %s:%d", *host, *port)
 	p("\033[32m•\033[0m using responses file: %s", *responseFileName)
 	p("\033[32m•\033[0m press ctrl+c to stop")
 	p("")
@@ -57,7 +58,9 @@ func main() {
 		}),
 	)
 
-	server, rn, err := pretender.NewServer(*port, *responseFileName, logger, os.Getenv("PRETENDER_HEALTH_CHECK_PATH"))
+	healthCheckPath := os.Getenv("PRETENDER_HEALTH_CHECK_PATH")
+
+	server, rn, err := pretender.NewServer(*host, *port, *responseFileName, logger, healthCheckPath)
 	if err != nil {
 		logger.Error("creating server", "error", err)
 		os.Exit(1)

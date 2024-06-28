@@ -72,14 +72,14 @@ func TestNewServer(t *testing.T) {
 	}
 
 	t.Run("should error out when file fails to load", func(t *testing.T) {
-		server, _, err := NewServer(8080, "no.json", discardLogger)
+		server, _, err := NewServer("127.0.0.1", 8080, "no.json", discardLogger)
 		if err == nil {
 			t.Errorf("expected an error, got %v", server)
 		}
 	})
 
 	t.Run("should return a server", func(t *testing.T) {
-		server, _, err := NewServer(8080, responseFileName, discardLogger)
+		server, _, err := NewServer("127.0.0.1", 8080, responseFileName, discardLogger)
 		if err != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
