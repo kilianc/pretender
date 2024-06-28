@@ -25,7 +25,7 @@
 ██████╔╝██████╔╝█████╗     ██║   █████╗  ██╔██╗ ██║██║  ██║█████╗  ██████╔╝
 ██╔═══╝ ██╔══██╗██╔══╝     ██║   ██╔══╝  ██║╚██╗██║██║  ██║██╔══╝  ██╔══██╗
 ██║     ██║  ██║███████╗   ██║   ███████╗██║ ╚████║██████╔╝███████╗██║  ██║
-╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.7.0
+╚═╝     ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚═════╝ ╚══════╝╚═╝  ╚═╝ v1.8.0
 
 • starting server on port 8080
 • using responses file: examples/example.json
@@ -37,7 +37,7 @@
 With `go install`
 
 ```sh
-go install github.com/kilianc/pretender/cmd/pretender@v1.7.0
+go install github.com/kilianc/pretender/cmd/pretender@v1.8.0
 ```
 
 With `docker`
@@ -46,7 +46,7 @@ With `docker`
 docker run --rm -it \
   -p 8080:8080 \
   -v $(pwd)/examples:/examples \
-  kilianciuffolo/pretender:v1.7.0 --responses /examples/example.json
+  kilianciuffolo/pretender:v1.8.0 --responses /examples/example.json
 ```
 
 With `curl`
@@ -55,7 +55,7 @@ With `curl`
 export CURRENT_OS=$(uname -s | tr A-Z a-z)
 export CURRENT_ARCH=$(uname -m | tr A-Z a-z | sed s/x86_64/amd64/)
 export TARGZ_NAME="pretender-${CURRENT_OS}-${CURRENT_ARCH}.tar.gz"
-export TARGZ_URL="https://github.com/kilianc/pretender/releases/download/v1.7.0/${TARGZ_NAME}"
+export TARGZ_URL="https://github.com/kilianc/pretender/releases/download/v1.8.0/${TARGZ_NAME}"
 
 curl -sOL ${TARGZ_URL}
 tar -xzf ${TARGZ_NAME}
