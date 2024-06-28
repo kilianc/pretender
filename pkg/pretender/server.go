@@ -71,5 +71,5 @@ func NewServer(
 		return nil, 0, err
 	}
 
-	return &http.Server{Addr: fmt.Sprintf(":%d", port), Handler: mux}, rn, nil
+	return &http.Server{Addr: fmt.Sprintf("%d", port), Handler: mux}, rn, nil
 }
