@@ -4,6 +4,7 @@ GOFUMPT_VERSION := v0.6.0
 GOLANGCI_LINT_VERSION := v1.57.2
 RESPONSES_FILE ?= examples/example.json
 BINARY_NAME := pretender
+BINARY_VERSION := v1.8.0
 OS_LIST := darwin linux
 ARCH_LIST := arm64 amd64
 BUILD_TARGETS := $(foreach os,$(OS_LIST),$(foreach arch,$(ARCH_LIST),bin/$(BINARY_NAME)-$(os)-$(arch)))
@@ -95,6 +96,15 @@ changelog: bin/git-chglog
 	@git tag -l | xargs git tag -d > /dev/null 2>&1
 	@git fetch --tags > /dev/null 2>&1
 	@bin/git-chglog --no-emoji -o CHANGELOG.md --next-tag $(tag)
+
+version-bump:
+	@echo ""
+	@echo "bumping version to $(version)"
+	@find . \
+	  -path ./.git -prune -o \
+		-type f \
+		-exec ex -sc '%s/$(BINARY_VERSION)/$(version)/g' -c 'x' {} \;
+	@git status
 
 .PHONY: version-check
 version-check:
